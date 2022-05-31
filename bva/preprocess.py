@@ -111,8 +111,13 @@ def get_all_videos_sequences_by_window(video_details_path, clean_dataset_path,
         all_video_frames = df_shots[df_shots['video_path'] == video]
         # get sequences of one video
         X, y = get_video_sequences_by_window(all_video_frames, nb_frames_per_window)
-        test_dict[video] = (X,y)
+        # shift y
+        to_insert = ['nan'] * nb_frames_per_window
+        y = np.insert(y, 0, to_insert)
+        # replace 'nan' value by 'no_hit'
+        y[y == 'nan'] = 'no_hit'
 
+        test_dict[video] = (X,y[nb_frames_per_window:])
 
     return df_shots, all_videos_sequences, all_videos_targets, test_dict
 
