@@ -26,26 +26,6 @@ def get_features(df_shots):
     df_shots['birdie_y_nrm'] = df_shots.apply(
         lambda x: normalize_y(x.birdie_visible, x.birdie_y, x.height), axis=1)
 
-    # to normalize !!!
-    df_shots['birdie_dist_ul_corner'] = df_shots.apply(
-        lambda x: distance_to_court_point(x.birdie_visible, x.birdie_x, x.birdie_y,
-                                          x.ul_corner_x, x.ul_corner_y), axis=1)
-    df_shots['birdie_dist_ur_corner'] = df_shots.apply(
-        lambda x: distance_to_court_point(x.birdie_visible, x.birdie_x, x.birdie_y,
-                                          x.ur_corner_x, x.ur_corner_y), axis=1)
-    df_shots['birdie_dist_br_corner'] = df_shots.apply(
-        lambda x: distance_to_court_point(x.birdie_visible, x.birdie_x, x.birdie_y,
-                                          x.br_corner_x, x.br_corner_y), axis=1)
-    df_shots['birdie_dist_bl_corner'] = df_shots.apply(
-        lambda x: distance_to_court_point(x.birdie_visible, x.birdie_x, x.birdie_y,
-                                          x.bl_corner_x, x.bl_corner_y), axis=1)
-    df_shots['birdie_dist_left_net'] = df_shots.apply(
-        lambda x: distance_to_court_point(x.birdie_visible, x.birdie_x, x.birdie_y,
-                                          x.left_net_x, x.left_net_y), axis=1)
-    df_shots['birdie_dist_right_net'] = df_shots.apply(
-        lambda x: distance_to_court_point(x.birdie_visible, x.birdie_x, x.birdie_y,
-                                          x.right_net_x, x.right_net_y), axis=1)
-
     return df_shots
 
 def get_video_sequences_by_window(all_video_frames, nb_frame_per_window):
@@ -55,14 +35,17 @@ def get_video_sequences_by_window(all_video_frames, nb_frame_per_window):
 
     # loop on each frame 
     for idx, frame in all_video_frames.iterrows():
-        features = [frame.birdie_x_nrm,
+        features = [frame.birdie_visible,
+                    frame.birdie_x_nrm,
                     frame.birdie_y_nrm,
-                    frame.birdie_dist_ul_corner,
-                    frame.birdie_dist_ur_corner,
-                    frame.birdie_dist_br_corner,
-                    frame.birdie_dist_bl_corner,
-                    frame.birdie_dist_left_net,
-                    frame.birdie_dist_right_net]
+                    frame.ul_corner_x,
+                    frame.ul_corner_y,
+                    frame.ur_corner_x,
+                    frame.ur_corner_y,
+                    frame.br_corner_x,
+                    frame.br_corner_y,
+                    frame.bl_corner_x,
+                    frame.bl_corner_y]
         target = frame.stroke
         if frame.frame > nb_frame_per_window-1:
             video_sequences.append(window_frames_features)
@@ -73,6 +56,13 @@ def get_video_sequences_by_window(all_video_frames, nb_frame_per_window):
             window_frames_features.append(features)
 
     return np.array(video_sequences), np.array(video_targets)
+
+def shift_y(y, nb_frames_per_window):
+    to_insert = ['nan'] * nb_frames_per_window
+    y = np.insert(y, 0, to_insert)
+    # replace 'nan' value by 'no_hit'
+    y[y == 'nan'] = 'no_hit'
+    return y[nb_frames_per_window:]
 
 def get_all_videos_sequences_by_window(video_details_path, clean_dataset_path,
                                     nb_frames_per_window, nb_videos_test):
@@ -93,17 +83,15 @@ def get_all_videos_sequences_by_window(video_details_path, clean_dataset_path,
         # get sequences of one video
         X, y = get_video_sequences_by_window(all_video_frames, nb_frames_per_window)
         # shift y
-        to_insert = ['nan'] * nb_frames_per_window
-        y = np.insert(y, 0, to_insert)
-        # replace 'nan' value by 'no_hit'
-        y[y == 'nan'] = 'no_hit'
+        y = shift_y(y, nb_frames_per_window)
+
         # add to results
         if len(all_videos_sequences) > 0:
             all_videos_sequences = np.vstack((all_videos_sequences, X))
-            all_videos_targets = np.concatenate([all_videos_targets, y[nb_frames_per_window:]])
+            all_videos_targets = np.concatenate([all_videos_targets, y])
         else:
             all_videos_sequences = X
-            all_videos_targets = y[nb_frames_per_window:]
+            all_videos_targets = y
 
     videos_test = df_shots['video_path'].unique()[nb_videos_test:]
     for video in videos_test:
@@ -112,16 +100,14 @@ def get_all_videos_sequences_by_window(video_details_path, clean_dataset_path,
         # get sequences of one video
         X, y = get_video_sequences_by_window(all_video_frames, nb_frames_per_window)
         # shift y
-        to_insert = ['nan'] * nb_frames_per_window
-        y = np.insert(y, 0, to_insert)
-        # replace 'nan' value by 'no_hit'
-        y[y == 'nan'] = 'no_hit'
+        y = shift_y(y, nb_frames_per_window)
 
         test_dict[video] = (X,y[nb_frames_per_window:])
 
     return df_shots, all_videos_sequences, all_videos_targets, test_dict
 
 if __name__ == "__main__":
+    cur_dir = os.path.dirname(os.path.realpath(__file__))
     df, X, y, test_dict = get_all_videos_sequences_by_window(
-                        '../data/video_details.csv',
-                        '../data/clean_dataset.csv', 5, 5)
+                        f'{cur_dir}/data/video_details.csv',
+                        f'{cur_dir}/data/clean_dataset.csv', 5, 5)
