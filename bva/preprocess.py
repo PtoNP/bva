@@ -106,8 +106,52 @@ def get_all_videos_sequences_by_window(video_details_path, clean_dataset_path,
 
     return df_shots, all_videos_sequences, all_videos_targets, test_dict
 
+
+def get_X_from_tracknet_output(predict_path, video_details_path, nb_frames_per_window):
+    filename = predict_path.split('/')[-1].replace('.csv','.mp4')
+    video_path = f'./input/{filename}'
+
+    video_details = pd.read_csv(video_details_path)
+    video_details['video_path'] = video_path
+
+    video_birdie_positions = pd.read_csv(predict_path)
+    video_birdie_positions['video_path'] = video_path
+    video_birdie_positions['stroke'] = 'none'
+
+    video_birdie_positions = video_birdie_positions.rename(
+                        columns = {'Frame':'frame',
+                                    'Visibility':'birdie_visible',
+                                    'X': 'birdie_x',
+                                    'Y':'birdie_y',
+                                    'Time': 'time',
+                                    'stroke': 'stroke'}) \
+                            .reindex(columns = ['video_path', 'frame',
+                                                'birdie_visible', 'birdie_x',
+                                                'birdie_y',
+                                                'time',
+                                                'stroke'])
+
+    video_birdie_positions = video_birdie_positions.merge(video_details, on='video_path')
+
+    video_birdie_positions = get_features(video_birdie_positions)
+
+    X, y = get_video_sequences_by_window(video_birdie_positions, nb_frames_per_window)
+
+    return X
+
+
+
 if __name__ == "__main__":
+    FRAMES_PER_WINDOW = 5
+    NB_VIDEO_TEST = 5
+
     cur_dir = os.path.dirname(os.path.realpath(__file__))
     df, X, y, test_dict = get_all_videos_sequences_by_window(
                         f'{cur_dir}/data/video_details.csv',
-                        f'{cur_dir}/data/clean_dataset.csv', 5, 5)
+                        f'{cur_dir}/data/clean_dataset.csv', FRAMES_PER_WINDOW, NB_VIDEO_TEST)
+
+    predict_path = f'{cur_dir}/../raw_data/1_00_02_predict.csv'
+    video_details_path = f'{cur_dir}/../raw_data/1_00_02_details.csv'
+
+    X_test = get_X_from_tracknet_output(predict_path, video_details_path, FRAMES_PER_WINDOW)
+    #print(X_test)
