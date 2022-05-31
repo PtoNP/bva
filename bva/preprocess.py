@@ -93,7 +93,7 @@ def get_all_videos_sequences_by_window(video_details_path, clean_dataset_path,
             all_videos_sequences = X
             all_videos_targets = y
 
-    videos_test = df_shots['video_path'].unique()[nb_videos_test:]
+    videos_test = df_shots['video_path'].unique()[-nb_videos_test:]
     for video in videos_test:
         # get video frames
         all_video_frames = df_shots[df_shots['video_path'] == video]
@@ -102,7 +102,7 @@ def get_all_videos_sequences_by_window(video_details_path, clean_dataset_path,
         # shift y
         y = shift_y(y, nb_frames_per_window)
 
-        test_dict[video] = (X,y[nb_frames_per_window:])
+        test_dict[video] = (X,y)
 
     return df_shots, all_videos_sequences, all_videos_targets, test_dict
 
