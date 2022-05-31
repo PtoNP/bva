@@ -74,15 +74,14 @@ def get_video_sequences_by_window(all_video_frames, nb_frame_per_window):
 
     return np.array(video_sequences), np.array(video_targets)
 
-def get_all_videos_sequences_by_window(nb_frames_per_window, nb_videos_test):
+def get_all_videos_sequences_by_window(video_details_path, clean_dataset_path,
+                                    nb_frames_per_window, nb_videos_test):
     all_videos_sequences = []
     all_videos_targets = []
     test_dict = {}
 
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-
-    video_details = pd.read_csv(f'{current_dir}/../data/video_details.csv')
-    df_shots = pd.read_csv(f'{current_dir}/../data/clean_dataset.csv')
+    video_details = pd.read_csv(video_details_path)
+    df_shots = pd.read_csv(clean_dataset_path)
     df_shots = df_shots.merge(video_details, on='video_path')
     df_shots = get_features(df_shots)
 
@@ -118,4 +117,6 @@ def get_all_videos_sequences_by_window(nb_frames_per_window, nb_videos_test):
     return df_shots, all_videos_sequences, all_videos_targets, test_dict
 
 if __name__ == "__main__":
-    df, X, y, test_dict = get_all_videos_sequences_by_window(5)
+    df, X, y, test_dict = get_all_videos_sequences_by_window(
+                        '../data/video_details.csv',
+                        '../data/clean_dataset.csv', 5, 5)
