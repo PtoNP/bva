@@ -81,8 +81,8 @@ def get_all_videos_sequences_by_window(nb_frames_per_window, nb_videos_test):
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    video_details = pd.read_csv(f'{current_dir}/../raw_data/video_details.csv')
-    df_shots = pd.read_csv(f'{current_dir}/../raw_data/clean_dataset.csv')
+    video_details = pd.read_csv(f'{current_dir}/../data/video_details.csv')
+    df_shots = pd.read_csv(f'{current_dir}/../data/clean_dataset.csv')
     df_shots = df_shots.merge(video_details, on='video_path')
     df_shots = get_features(df_shots)
 
