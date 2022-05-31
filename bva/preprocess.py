@@ -74,9 +74,10 @@ def get_video_sequences_by_window(all_video_frames, nb_frame_per_window):
 
     return np.array(video_sequences), np.array(video_targets)
 
-def get_all_videos_sequences_by_window(nb_frames_per_window):
+def get_all_videos_sequences_by_window(nb_frames_per_window, nb_videos_test):
     all_videos_sequences = []
     all_videos_targets = []
+    test_dict = {}
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -85,9 +86,9 @@ def get_all_videos_sequences_by_window(nb_frames_per_window):
     df_shots = df_shots.merge(video_details, on='video_path')
     df_shots = get_features(df_shots)
 
-    videos = df_shots['video_path'].unique()
+    videos_train = df_shots['video_path'].unique()[0:-nb_videos_test]
 
-    for video in videos:
+    for video in videos_train:
         # get video frames
         all_video_frames = df_shots[df_shots['video_path'] == video]
         # get sequences of one video
@@ -105,7 +106,16 @@ def get_all_videos_sequences_by_window(nb_frames_per_window):
             all_videos_sequences = X
             all_videos_targets = y[nb_frames_per_window:]
 
-    return df_shots, all_videos_sequences, all_videos_targets
+    videos_test = df_shots['video_path'].unique()[nb_videos_test:]
+    for video in videos_test:
+        # get video frames
+        all_video_frames = df_shots[df_shots['video_path'] == video]
+        # get sequences of one video
+        X, y = get_video_sequences_by_window(all_video_frames, nb_frames_per_window)
+        test_dict[video] = (X,y)
+
+
+    return df_shots, all_videos_sequences, all_videos_targets, test_dict
 
 if __name__ == "__main__":
-    df, X, y = get_all_videos_sequences_by_window(5)
+    df, X, y, test_dict = get_all_videos_sequences_by_window(5)
