@@ -34,7 +34,7 @@ def process_features_target(X, y):
 
 def init_model():
     model = Sequential()
-    model.add(layers.Masking(mask_value=-1000, input_shape=(params.NB_FRAME_PADDING,12)))
+    model.add(layers.Masking(mask_value=-1000, input_shape=(params.NB_FRAME_PADDING,11)))
     model.add(layers.GRU(units=64, activation='tanh', return_sequences=True))
     model.add(layers.GRU(units=32, activation='tanh', return_sequences=True))
     model.add(layers.GRU(units=24, activation='tanh', return_sequences=False))
