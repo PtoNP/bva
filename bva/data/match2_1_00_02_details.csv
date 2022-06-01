@@ -1,0 +1,2 @@
+,video_path,fps,width,height,ul_corner_x,ul_corner_y,ur_corner_x,ur_corner_y,br_corner_x,br_corner_y,bl_corner_x,bl_corner_y,left_net_x,left_net_y,right_net_x,right_net_y
+0,./input/1_01_00.mp4,29.97,1280,720,427,393,832,393,1076,713,187,713,353,352,909,354

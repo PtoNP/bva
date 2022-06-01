@@ -8,7 +8,9 @@ streamlit
 # data science
 numpy
 pandas
+matplotlib
 scikit-learn
+tensorflow
 
 # tests/linter
 black
