@@ -25,6 +25,22 @@ def get_features(df_shots):
         lambda x: normalize_x(x.birdie_visible, x.birdie_x, x.width), axis=1)
     df_shots['birdie_y_nrm'] = df_shots.apply(
         lambda x: normalize_y(x.birdie_visible, x.birdie_y, x.height), axis=1)
+    df_shots['ul_corner_x_nrm'] = df_shots.apply(
+        lambda x: normalize_y(1, x.ul_corner_x, x.width), axis=1)
+    df_shots['ul_corner_y_nrm'] = df_shots.apply(
+        lambda x: normalize_y(1, x.ul_corner_y, x.height), axis=1)
+    df_shots['ur_corner_x_nrm'] = df_shots.apply(
+        lambda x: normalize_y(1, x.ur_corner_x, x.width), axis=1)
+    df_shots['ur_corner_y_nrm'] = df_shots.apply(
+        lambda x: normalize_y(1, x.ur_corner_y, x.height), axis=1)
+    df_shots['br_corner_x_nrm'] = df_shots.apply(
+        lambda x: normalize_y(1, x.br_corner_x, x.width), axis=1)
+    df_shots['br_corner_y_nrm'] = df_shots.apply(
+        lambda x: normalize_y(1, x.br_corner_y, x.height), axis=1)
+    df_shots['bl_corner_x_nrm'] = df_shots.apply(
+        lambda x: normalize_y(1, x.bl_corner_x, x.width), axis=1)
+    df_shots['bl_corner_y_nrm'] = df_shots.apply(
+        lambda x: normalize_y(1, x.bl_corner_y, x.height), axis=1)
 
     return df_shots
 
@@ -40,14 +56,14 @@ def get_video_sequences_by_window(all_video_frames, nb_frame_per_window):
         features = [frame.birdie_visible,
                     frame.birdie_x_nrm,
                     frame.birdie_y_nrm,
-                    frame.ul_corner_x,
-                    frame.ul_corner_y,
-                    frame.ur_corner_x,
-                    frame.ur_corner_y,
-                    frame.br_corner_x,
-                    frame.br_corner_y,
-                    frame.bl_corner_x,
-                    frame.bl_corner_y]
+                    frame.ul_corner_x_nrm,
+                    frame.ul_corner_y_nrm,
+                    frame.ur_corner_x_nrm,
+                    frame.ur_corner_y_nrm,
+                    frame.br_corner_x_nrm,
+                    frame.br_corner_y_nrm,
+                    frame.bl_corner_x_nrm,
+                    frame.bl_corner_y_nrm]
         target = frame.stroke
         if frame.frame > nb_frame_per_window-2:
             video_sequences.append(window_frames_features)
@@ -156,9 +172,9 @@ if __name__ == "__main__":
                         f'{cur_dir}/data/video_details.csv',
                         f'{cur_dir}/data/clean_dataset.csv', FRAMES_PER_WINDOW, NB_VIDEO_TEST)
 
-    print(test_dict['match9/rally_video/1_07_10.mp4'][0].shape)
-    print(test_dict['match9/rally_video/1_07_10.mp4'][1].shape)
-    print(test_dict['match9/rally_video/1_07_10.mp4'][1])
+    #print(test_dict['match9/rally_video/1_07_10.mp4'][0].shape)
+    #print(test_dict['match9/rally_video/1_07_10.mp4'][1].shape)
+    #print(test_dict['match9/rally_video/1_07_10.mp4'][1])
 
     predict_path = f'{cur_dir}/../raw_data/1_00_02_predict.csv'
     video_details_path = f'{cur_dir}/../raw_data/1_00_02_details.csv'
