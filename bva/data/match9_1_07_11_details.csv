@@ -1,0 +1,2 @@
+,video_path,fps,width,height,ul_corner_x,ul_corner_y,ur_corner_x,ur_corner_y,br_corner_x,br_corner_y,bl_corner_x,bl_corner_y,left_net_x,left_net_y,right_net_x,right_net_y
+95,match9/rally_video/1_07_11.mp4,25.0,1280,720,416,358,861,358,1014,672,267,670,362,335,916,337
