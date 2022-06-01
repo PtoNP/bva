@@ -1,5 +1,6 @@
 import os
 from preprocess import get_all_videos_sequences_by_window
+import params
 from df_by_hit import get_shots_sequences
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import pandas as pd
@@ -28,12 +29,12 @@ def process_features_target(X, y):
     y_enc = label_encoder.fit_transform(y)
     # padding X
     X_pad = pad_sequences(X, dtype='float32', \
-        padding='post', value=-1000, maxlen=35)
+        padding='post', value=-1000, maxlen=params.NB_FRAME_PADDING)
     return X_pad, to_categorical(y_enc)
 
 def init_model():
     model = Sequential()
-    model.add(layers.Masking(mask_value=-1000, input_shape=(35,12)))
+    model.add(layers.Masking(mask_value=-1000, input_shape=(params.NB_FRAME_PADDING,12)))
     model.add(layers.GRU(units=64, activation='tanh', return_sequences=True))
     model.add(layers.GRU(units=32, activation='tanh', return_sequences=True))
     model.add(layers.GRU(units=24, activation='tanh', return_sequences=False))
