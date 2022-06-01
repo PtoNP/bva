@@ -115,7 +115,7 @@ def get_all_videos_sequences_by_window(video_details_path, clean_dataset_path,
     df_shots = df_shots.merge(video_details, on='video_path')
     df_shots = get_features(df_shots)
 
-    videos_train = df_shots['video_path'].unique()[0:-nb_videos_test]
+    videos_train = df_shots['video_path'].unique()[:-nb_videos_test]
 
     for video in videos_train:
         # get video frames
