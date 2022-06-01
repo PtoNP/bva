@@ -1,5 +1,8 @@
 import os
 from preprocess import get_all_videos_sequences_by_window
+import params
+from df_by_hit import get_shots_sequences
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,32 +13,36 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.optimizers import RMSprop
+import pickle
 
 
-def get_data(FRAMES_PER_WINDOW=5, NB_VIDEO_TEST=5):
+def get_data():
     cur_dir = os.path.dirname(os.path.realpath(__file__))
-    df, X, y, test_dict = get_all_videos_sequences_by_window(
-                    f'{cur_dir}/data/video_details.csv',
-                    f'{cur_dir}/data/clean_dataset.csv', FRAMES_PER_WINDOW, NB_VIDEO_TEST)
-    return df, X, y, test_dict
+    seq_train, targ_train, seq_tests, targ_tests = get_shots_sequences(
+                    f'{cur_dir}/data/clean_dataset.csv',
+                    f'{cur_dir}/data/video_details.csv')
+    return seq_train, targ_train, seq_tests, targ_tests
 
-def process_target(y):
+def process_features_target(X, y):
+    # cat y
     label_encoder = LabelEncoder()
     y_enc = label_encoder.fit_transform(y)
-    return to_categorical(y_enc)
-
-def test_split(X_all, y_cat):
-    X_train, X_val, y_train, y_val = train_test_split(X_all, y_cat, test_size=0.2)
-    return X_train, X_val, y_train, y_val
+    # padding X
+    X_pad = pad_sequences(X, dtype='float32', \
+        padding='post', value=-1000, maxlen=params.NB_FRAME_PADDING)
+    return X_pad, to_categorical(y_enc)
 
 def init_model():
     model = Sequential()
-    # model.add(layers.Masking(mask_value=-1000, input_shape=(50,2))) => no padding
-    model.add(layers.GRU(units=30, activation='tanh', return_sequences=True))
-    model.add(layers.GRU(units=20, activation='tanh', return_sequences=False))
+    model.add(layers.Masking(mask_value=-1000, input_shape=(params.NB_FRAME_PADDING,12)))
+    model.add(layers.GRU(units=64, activation='tanh', return_sequences=True))
+    model.add(layers.GRU(units=32, activation='tanh', return_sequences=True))
+    model.add(layers.GRU(units=24, activation='tanh', return_sequences=False))
     model.add(layers.Dense(50, activation='relu'))
     model.add(layers.Dropout(rate=0.2))
-    model.add(layers.Dense(14, activation='softmax'))
+    model.add(layers.Dense(30, activation='relu'))
+    model.add(layers.Dropout(rate=0.2))
+    model.add(layers.Dense(13, activation='softmax'))
     # Compilation
     model.compile(loss='categorical_crossentropy',
                 optimizer=RMSprop(learning_rate=0.001),
@@ -49,10 +56,17 @@ def init_fitting(model, X_train, y_train, X_val, y_val):
         epochs=500, batch_size=16, callbacks=[es])
     return model
 
-if __name__ == "__main__":
-    df, X, y, test_dict = get_data()
-    y_cat = process_target(y)
-    X_train, X_val, y_train, y_val = test_split(X, y_cat)
+# Training
+def training(filename='bva_model_trained.sav'):
+    seq_train, targ_train, seq_tests, targ_tests = get_data()
+    X_train_pad, y_train_cat = process_features_target(seq_train, targ_train)
+    X_test_pad, y_test_pad = process_features_target(seq_tests, targ_tests)
+    X_train, X_val, y_train, y_val = train_test_split(X_train_pad, y_train_cat, test_size=0.2)
     model = init_model()
-    history = init_fitting(model, X_train, y_train, X_val, y_val)
+    model = init_fitting(model, X_train, y_train, X_val, y_val)
+    pickle.dump(model, open(filename, 'wb'))
+    return model, X_test_pad, y_test_pad
+
+if __name__ == "__main__":
+    training()
     print("ok done")
