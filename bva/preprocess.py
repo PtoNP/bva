@@ -49,12 +49,14 @@ def get_video_sequences_by_window(all_video_frames, nb_frame_per_window):
     stroke_classes = all_video_frames['stroke'].unique()
     stroke_classes = [item for item in stroke_classes if not(pd.isnull(item)) == True]
 
+    print(stroke_classes)
+
     video_sequences = []
     video_targets = []
     window_frames_features = []
 
     sequence_started = False
-
+    print(nb_frame_per_window)
     # loop on each frame 
     for idx, frame in all_video_frames.iterrows():
         features = [frame.birdie_visible,
@@ -69,8 +71,9 @@ def get_video_sequences_by_window(all_video_frames, nb_frame_per_window):
                     frame.bl_corner_x_nrm,
                     frame.bl_corner_y_nrm]
         target = frame.stroke
-
+        #print(target)
         if target in stroke_classes:
+            #print(idx)
             sequence_started = True
             sequence_target = target
             sequence_features_counter = 0
@@ -78,13 +81,16 @@ def get_video_sequences_by_window(all_video_frames, nb_frame_per_window):
 
         if sequence_started:
             if sequence_features_counter >= nb_frame_per_window:
+                #print('test')
                 sequence_started = False
                 video_sequences.append(window_frames_features)
                 video_targets.append(sequence_target)
             else:
+                #print('test2')
                 window_frames_features.append(features)
 
             sequence_features_counter += 1
+            #print(sequence_features_counter)
 
     return np.array(video_sequences), np.array(video_targets)
 
@@ -149,6 +155,35 @@ def get_all_videos_sequences_by_window(video_details_path, clean_dataset_path,
     return df_shots, all_videos_sequences, all_videos_targets, test_dict
 
 
+
+def get_video_sequences_for_predict(all_video_frames, nb_frame_per_window):
+
+    sequences = []
+    window_features = []
+    all_features = []
+    counter = 0
+    for idx, frame in all_video_frames.iterrows():
+        features = [frame.birdie_visible,
+                    frame.birdie_x_nrm,
+                    frame.birdie_y_nrm,
+                    frame.ul_corner_x_nrm,
+                    frame.ul_corner_y_nrm,
+                    frame.ur_corner_x_nrm,
+                    frame.ur_corner_y_nrm,
+                    frame.br_corner_x_nrm,
+                    frame.br_corner_y_nrm,
+                    frame.bl_corner_x_nrm,
+                    frame.bl_corner_y_nrm]
+        all_features.append(features)
+
+    while counter < len(all_features) - nb_frame_per_window:
+        window_features = all_features[counter:counter+nb_frame_per_window]
+        print(len(window_features))
+        sequences.append(window_features)
+        counter += 1
+
+    return np.array(sequences)
+
 def get_X_from_tracknet_output(predict_path, video_details_path, nb_frames_per_window):
     filename = predict_path.split('/')[-1].replace('.csv','.mp4')
     video_path = f'./input/{filename}'
@@ -177,7 +212,7 @@ def get_X_from_tracknet_output(predict_path, video_details_path, nb_frames_per_w
 
     video_birdie_positions = get_features(video_birdie_positions)
 
-    X, y = get_video_sequences_by_window(video_birdie_positions, nb_frames_per_window)
+    X = get_video_sequences_for_predict(video_birdie_positions, nb_frames_per_window)
 
     return X
 
@@ -187,16 +222,17 @@ if __name__ == "__main__":
     NB_VIDEO_TEST = 2
 
     cur_dir = os.path.dirname(os.path.realpath(__file__))
-    df, X, y, test_dict = get_all_videos_sequences_by_window(
-                        f'{cur_dir}/data/video_details.csv',
-                        f'{cur_dir}/data/clean_dataset.csv', FRAMES_PER_WINDOW, NB_VIDEO_TEST)
+    # df, X, y, test_dict = get_all_videos_sequences_by_window(
+    #                     f'{cur_dir}/data/video_details.csv',
+    #                     f'{cur_dir}/data/clean_dataset.csv', FRAMES_PER_WINDOW, NB_VIDEO_TEST)
 
     #print(y[0:30])
     #print(test_dict['match9/rally_video/1_07_10.mp4'][0].shape)
     #print(test_dict['match9/rally_video/1_07_10.mp4'][1].shape)
     #print(test_dict['match9/rally_video/1_07_10.mp4'][1])
 
-    #predict_path = f'{cur_dir}/../raw_data/1_00_02_predict.csv'
-    #video_details_path = f'{cur_dir}/../raw_data/1_00_02_details.csv'
+    predict_path = f'{cur_dir}/../raw_data/1_00_02_predict.csv'
+    video_details_path = f'{cur_dir}/../raw_data/1_00_02_details.csv'
 
-    #X_test = get_X_from_tracknet_output(predict_path, video_details_path, FRAMES_PER_WINDOW)
+    X_test = get_X_from_tracknet_output(predict_path, video_details_path, FRAMES_PER_WINDOW)
+    #print(X_test.shape)
