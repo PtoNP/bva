@@ -45,11 +45,15 @@ def get_features(df_shots):
     return df_shots
 
 def get_video_sequences_by_window(all_video_frames, nb_frame_per_window):
+
+    stroke_classes = all_video_frames['stroke'].unique()
+    stroke_classes = [item for item in stroke_classes if not(pd.isnull(item)) == True]
+
     video_sequences = []
-    video_targets = ['nan'] * nb_frame_per_window
+    video_targets = []
     window_frames_features = []
 
-    last_frame_idx = len(all_video_frames) - 1
+    sequence_started = False
 
     # loop on each frame 
     for idx, frame in all_video_frames.iterrows():
@@ -65,26 +69,39 @@ def get_video_sequences_by_window(all_video_frames, nb_frame_per_window):
                     frame.bl_corner_x_nrm,
                     frame.bl_corner_y_nrm]
         target = frame.stroke
-        if frame.frame > nb_frame_per_window-2:
-            video_sequences.append(window_frames_features)
-            video_targets.append(target)
-            window_frame_features = window_frames_features[1:]
-            window_frame_features.append(features)
-        else:
-            window_frames_features.append(features)
-            video_targets.append(target)
 
-        if last_frame_idx == frame.frame - nb_frame_per_window:
-            break
+        if target in stroke_classes:
+            sequence_started = True
+            sequence_target = target
+            sequence_features_counter = 0
+            window_frames_features = []
 
-    nb_sequence = len(video_sequences)
-    video_targets = video_targets[0:nb_sequence]
+        if sequence_started:
+            if sequence_features_counter >= nb_frame_per_window:
+                sequence_started = False
+                video_sequences.append(window_frames_features)
+                video_targets.append(sequence_target)
+            else:
+                window_frames_features.append(features)
+
+            sequence_features_counter += 1
 
     return np.array(video_sequences), np.array(video_targets)
 
 def clean_y(y):
     #replace 'nan' value by 'no_hit'
     y[y == 'nan'] = 'no_hit'
+    return y
+
+def multiply_targets(y, nb_frames_per_window):
+    i = 0
+    while i < len(y)-nb_frames_per_window:
+        if y[i] != 'no_hit':
+            for j in range(nb_frames_per_window):
+                y[i+j+1] = y[i]
+            i += nb_frames_per_window + 1
+        else:
+            i += 1
     return y
 
 def get_all_videos_sequences_by_window(video_details_path, clean_dataset_path,
@@ -106,7 +123,8 @@ def get_all_videos_sequences_by_window(video_details_path, clean_dataset_path,
         # get sequences of one video
         X, y = get_video_sequences_by_window(all_video_frames, nb_frames_per_window)
         # clean y
-        y = clean_y(y)
+        #y = clean_y(y)
+        #y = multiply_targets(y,nb_frames_per_window)
 
         # add to results
         if len(all_videos_sequences) > 0:
@@ -123,7 +141,8 @@ def get_all_videos_sequences_by_window(video_details_path, clean_dataset_path,
         # get sequences of one video
         X, y = get_video_sequences_by_window(all_video_frames, nb_frames_per_window)
         # clean y
-        y = clean_y(y)
+        #y = clean_y(y)
+        #y = multiply_targets(y,nb_frames_per_window)
 
         test_dict[video] = (X,y)
 
@@ -172,11 +191,12 @@ if __name__ == "__main__":
                         f'{cur_dir}/data/video_details.csv',
                         f'{cur_dir}/data/clean_dataset.csv', FRAMES_PER_WINDOW, NB_VIDEO_TEST)
 
+    #print(y[0:30])
     #print(test_dict['match9/rally_video/1_07_10.mp4'][0].shape)
     #print(test_dict['match9/rally_video/1_07_10.mp4'][1].shape)
     #print(test_dict['match9/rally_video/1_07_10.mp4'][1])
 
-    predict_path = f'{cur_dir}/../raw_data/1_00_02_predict.csv'
-    video_details_path = f'{cur_dir}/../raw_data/1_00_02_details.csv'
+    #predict_path = f'{cur_dir}/../raw_data/1_00_02_predict.csv'
+    #video_details_path = f'{cur_dir}/../raw_data/1_00_02_details.csv'
 
-    X_test = get_X_from_tracknet_output(predict_path, video_details_path, FRAMES_PER_WINDOW)
+    #X_test = get_X_from_tracknet_output(predict_path, video_details_path, FRAMES_PER_WINDOW)
