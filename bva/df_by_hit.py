@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
-from bva.preprocess import get_features
+from preprocess import get_features
 
 def get_shots_sequences(df_url, vid_url, shots_test=300):
     df = pd.read_csv(df_url)
