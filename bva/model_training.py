@@ -13,7 +13,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.optimizers import RMSprop
-import pickle
+import joblib
 
 
 def get_data():
@@ -52,9 +52,9 @@ def init_model():
 # Init & fitting
 def init_fitting(model, X_train, y_train, X_val, y_val):
     es = EarlyStopping(patience=30, restore_best_weights=True)
-    model.fit(X_train, y_train, validation_data=(X_val, y_val), \
+    history = model.fit(X_train, y_train, validation_data=(X_val, y_val), \
         epochs=500, batch_size=16, callbacks=[es])
-    return model
+    return model, history
 
 # Training
 def training(filename='bva_model_trained.sav'):
@@ -63,9 +63,9 @@ def training(filename='bva_model_trained.sav'):
     X_test_pad, y_test_pad = process_features_target(seq_tests, targ_tests)
     X_train, X_val, y_train, y_val = train_test_split(X_train_pad, y_train_cat, test_size=0.2)
     model = init_model()
-    model = init_fitting(model, X_train, y_train, X_val, y_val)
-    pickle.dump(model, open(filename, 'wb'))
-    return model, X_test_pad, y_test_pad
+    model, history = init_fitting(model, X_train, y_train, X_val, y_val)
+    joblib.dump(model, filename)
+    return model, history, X_test_pad, y_test_pad
 
 if __name__ == "__main__":
     training()
