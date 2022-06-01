@@ -14,10 +14,10 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.optimizers import RMSprop
-import pickle
+import joblib
 
 def load_model(filename='bva_model_trained.sav'):
-    loaded_model = pickle.load(open(filename, 'rb'))
+    loaded_model = joblib.load(filename)
     return loaded_model
 
 
