@@ -15,8 +15,7 @@ def get_shots_sequences(df_url, vid_url, shots_test=300):
 
     # loop on each frame 
     for idx, frame in df_shots.iterrows():
-        features = [frame.birdie_hit,
-                    frame.birdie_visible,
+        features = [frame.birdie_visible,
                     frame.birdie_x_nrm,
                     frame.birdie_y_nrm,
                     frame.ul_corner_x_nrm,

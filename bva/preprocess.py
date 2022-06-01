@@ -178,7 +178,6 @@ def get_video_sequences_for_predict(all_video_frames, nb_frame_per_window):
 
     while counter < len(all_features) - nb_frame_per_window:
         window_features = all_features[counter:counter+nb_frame_per_window]
-        print(len(window_features))
         sequences.append(window_features)
         counter += 1
 
