@@ -86,7 +86,7 @@ def get_all_videos_sequences_by_window(video_details_path, clean_dataset_path,
 
     for video in videos_train:
         # get video frames
-        all_video_frames = df_shots[df_shots['video_path'] == video].head(10)
+        all_video_frames = df_shots[df_shots['video_path'] == video]
         # get sequences of one video
         X, y = get_video_sequences_by_window(all_video_frames, nb_frames_per_window)
         # clean y
