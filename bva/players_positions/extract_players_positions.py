@@ -184,6 +184,7 @@ class ExtractPlayersPositions:
 if __name__ == '__main__':
     cur_dir = os.path.dirname(os.path.realpath(__file__))
     match_path = 'match2/rally_video/1_00_02.mp4'
+    #match_path = 'match9/rally_video/1_07_11.mp4'
     video_path = f'{cur_dir}/../../raw_data/01_TRAIN/{match_path}'
 
     video_details_path = f'{cur_dir}/../../raw_data/video_details.csv'

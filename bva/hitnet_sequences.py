@@ -120,6 +120,82 @@ def get_sequences_by_video(df_url, vid_url, play_url, nb_videos_test):
     return all_videos_sequences, all_videos_targets, test_dict
 
 
+def get_video_sequences_for_predict(all_video_frames, nb_frame_per_window):
+
+    sequences = []
+    window_features = []
+    all_features = []
+    counter = 0
+    for idx, frame in all_video_frames.iterrows():
+        features = [frame.birdie_visible,
+                    frame.birdie_x_nrm,
+                    frame.birdie_y_nrm,
+                    frame.ul_corner_x_nrm,
+                    frame.ul_corner_y_nrm,
+                    frame.ur_corner_x_nrm,
+                    frame.ur_corner_y_nrm,
+                    frame.br_corner_x_nrm,
+                    frame.br_corner_y_nrm,
+                    frame.bl_corner_x_nrm,
+                    frame.bl_corner_y_nrm,
+                    frame.player_A_visible,
+                    frame.player_B_visible,
+                    frame.player_A_court_x_nrm,
+                    frame.player_A_court_y_nrm,
+                    frame.player_B_court_x_nrm,
+                    frame.player_B_court_y_nrm,
+                    frame.player_A_img_x_nrm,
+                    frame.player_A_img_y_nrm,
+                    frame.player_B_img_x_nrm,
+                    frame.player_B_img_y_nrm]
+        all_features.append(features)
+
+    while counter < len(all_features) - nb_frame_per_window:
+        window_features = all_features[counter:counter+nb_frame_per_window]
+        sequences.append(window_features)
+        counter += 1
+
+    return np.array(sequences)
+
+def get_X_from_tracknet_output(predict_path, video_details_path,
+                               players_positions_path, nb_frames_per_window):
+    filename = predict_path.split('/')[-1].replace('.csv','.mp4')
+    video_path = f'./input/{filename}'
+
+    video_details = pd.read_csv(video_details_path)
+    video_details['video_path'] = video_path
+
+    video_birdie_positions = pd.read_csv(predict_path)
+    video_birdie_positions['video_path'] = video_path
+    video_birdie_positions['stroke'] = 'none'
+
+    players_details = pd.read_csv(players_positions_path)
+
+    video_birdie_positions = video_birdie_positions.rename(
+                        columns = {'Frame':'frame',
+                                    'Visibility':'birdie_visible',
+                                    'X': 'birdie_x',
+                                    'Y':'birdie_y',
+                                    'Time': 'time',
+                                    'stroke': 'stroke'}) \
+                            .reindex(columns = ['video_path', 'frame',
+                                                'birdie_visible', 'birdie_x',
+                                                'birdie_y',
+                                                'time',
+                                                'stroke'])
+
+    video_birdie_positions = video_birdie_positions.merge(video_details, on='video_path')
+
+    video_birdie_positions = get_features(video_birdie_positions)
+
+    all_video_frames = video_birdie_positions.merge(players_details, on=['video_path','frame'])
+
+    X = get_video_sequences_for_predict(all_video_frames, nb_frames_per_window)
+
+    return X
+
+
+
 if __name__ == "__main__":
     cur_dir = os.path.dirname(os.path.realpath(__file__))
     all_videos_sequences, all_videos_targets, test_dict = get_sequences_by_video(

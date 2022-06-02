@@ -12,5 +12,7 @@ raw_data/
 !bva/data/players_positions.csv
 !bva/data/match2_1_00_02_details.csv
 !bva/data/match2_1_00_02_predict.csv
+!bva/data/match2_1_00_02_players.csv
 !bva/data/match9_1_07_11_details.csv
 !bva/data/match9_1_07_11_predict.csv
+!bva/data/match9_1_07_11_players.csv
