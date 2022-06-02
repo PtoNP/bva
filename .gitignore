@@ -7,6 +7,7 @@ raw_data/
 **/__pycache__/
 .env
 
+!/bva/data/hitnet_predict_match9_1_07_11.csv
 !bva/data/clean_dataset.csv
 !bva/data/video_details.csv
 !bva/data/players_positions.csv
