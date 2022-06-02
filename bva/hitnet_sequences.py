@@ -85,7 +85,7 @@ def get_video_sequences(video_frames):
 
     return np.array(sequences), np.array(targets)
 
-def get_sequences_by_video(df_url, vid_url, play_url):
+def get_sequences_by_video(df_url, vid_url, play_url, nb_videos_test):
     df = pd.read_csv(df_url)
     video_details = pd.read_csv(vid_url)
     play_details = pd.read_csv(play_url)
@@ -96,27 +96,37 @@ def get_sequences_by_video(df_url, vid_url, play_url):
     videos = df_shots["video_path"].unique()
     all_videos_sequences = []
     all_videos_targets = []
+    test_dict = {}
 
+    counter = 0
     for video in videos:
+
         all_video_frames = df_shots[df_shots["video_path"]==video]
         X, y = get_video_sequences(all_video_frames)
 
-        # add to results
-        if len(all_videos_sequences) > 0:
-            all_videos_sequences = np.vstack((all_videos_sequences, X))
-            all_videos_targets = np.concatenate([all_videos_targets, y])
+        if counter > len(videos) - nb_videos_test - 1:
+            test_dict[video] = (X,y)
         else:
-            all_videos_sequences = X
-            all_videos_targets = y
+            # add to results
+            if len(all_videos_sequences) > 0:
+                all_videos_sequences = np.vstack((all_videos_sequences, X))
+                all_videos_targets = np.concatenate([all_videos_targets, y])
+            else:
+                all_videos_sequences = X
+                all_videos_targets = y
 
-    return all_videos_sequences, all_videos_targets
+        counter += 1
+
+    return all_videos_sequences, all_videos_targets, test_dict
 
 
 if __name__ == "__main__":
     cur_dir = os.path.dirname(os.path.realpath(__file__))
-    all_videos_sequences, all_videos_targets = get_sequences_by_video(
+    all_videos_sequences, all_videos_targets, test_dict = get_sequences_by_video(
                                         f'{cur_dir}/data/clean_dataset.csv',
                                         f'{cur_dir}/data/video_details.csv',
-                                        f'{cur_dir}/data/players_positions.csv')
+                                        f'{cur_dir}/data/players_positions.csv',
+                                        2)
     unique, counts = np.unique(all_videos_targets, return_counts=True)
     print(all_videos_sequences.shape, all_videos_targets.shape, f"balance: {unique, counts}")
+    print(len(test_dict))

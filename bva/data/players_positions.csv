@@ -1,4 +1,4 @@
-,video_path,frame,player_A_visible,player_B_visible,player_A_court_x,player_A_court_y,player_A_img_x,player_A_img_y,player_B_court_x,player_B_court_y,player_B_img_x,player_B_img_y 
+,video_path,frame,player_A_visible,player_B_visible,player_A_court_x,player_A_court_y,player_A_img_x,player_A_img_y,player_B_court_x,player_B_court_y,player_B_img_x,player_B_img_y
 0,match21/rally_video/2_02_03.mp4,0,1,1,313,283,313,623,1021,366,516,698
 1,match21/rally_video/2_02_03.mp4,1,1,1,318,283,314,623,1023,366,517,698
 2,match21/rally_video/2_02_03.mp4,2,1,1,318,284,314,624,1029,367,519,699
