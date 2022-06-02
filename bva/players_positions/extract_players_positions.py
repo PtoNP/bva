@@ -57,7 +57,7 @@ class ExtractPlayersPositions:
     sequence_frame_counter = 0
 
     while has_next == True and (endTime == None or int(frame_counter/self.fps) < endTime):
-      print(frame_counter)
+      #print(frame_counter)
       if int(frame_counter/self.fps) >= startTime:
 
         img_court = self.bcc.drawCourt()
