@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
+import params
 
 def normalize_x(birdie_visible, birdie_x, width):
     if birdie_visible == 1:
@@ -21,6 +22,9 @@ def distance_to_court_point(birdie_visible, birdie_x, birdie_y, court_point_x, c
         return -1
 
 def get_features(df_shots):
+    court_width = params.COURT_WIDTH
+    court_height = params.COURT_HEIGHT
+
     df_shots['birdie_x_nrm'] = df_shots.apply(
         lambda x: normalize_x(x.birdie_visible, x.birdie_x, x.width), axis=1)
     df_shots['birdie_y_nrm'] = df_shots.apply(
@@ -41,6 +45,22 @@ def get_features(df_shots):
         lambda x: normalize_y(1, x.bl_corner_x, x.width), axis=1)
     df_shots['bl_corner_y_nrm'] = df_shots.apply(
         lambda x: normalize_y(1, x.bl_corner_y, x.height), axis=1)
+    df_shots['player_A_court_x_nrm'] = df_shots.apply(
+        lambda x: normalize_x(x.player_A_visible, x.player_A_court_x, court_width), axis=1)
+    df_shots['player_A_court_y_nrm'] = df_shots.apply(
+        lambda x: normalize_x(x.player_A_visible, x.player_A_court_y, court_height), axis=1)
+    df_shots['player_B_court_x_nrm'] = df_shots.apply(
+        lambda x: normalize_x(x.player_B_visible, x.player_B_court_x, court_width), axis=1)
+    df_shots['player_B_court_y_nrm'] = df_shots.apply(
+        lambda x: normalize_x(x.player_B_visible, x.player_B_court_y, court_height), axis=1)
+    df_shots['player_A_img_x_nrm'] = df_shots.apply(
+        lambda x: normalize_x(x.player_A_visible, x.player_A_img_x, x.width), axis=1)
+    df_shots['player_A_img_y_nrm'] = df_shots.apply(
+        lambda x: normalize_y(x.player_A_visible, x.player_A_img_y, x.height), axis=1)
+    df_shots['player_B_img_x_nrm'] = df_shots.apply(
+        lambda x: normalize_x(x.player_B_visible, x.player_B_img_x, x.width), axis=1)
+    df_shots['player_B_img_y_nrm'] = df_shots.apply(
+        lambda x: normalize_y(x.player_B_visible, x.player_B_img_y, x.height), axis=1)
 
     return df_shots
 
