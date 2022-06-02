@@ -114,68 +114,6 @@ def get_video_sequences_by_window(all_video_frames, nb_frame_per_window):
 
     return np.array(video_sequences), np.array(video_targets)
 
-def clean_y(y):
-    #replace 'nan' value by 'no_hit'
-    y[y == 'nan'] = 'no_hit'
-    return y
-
-def multiply_targets(y, nb_frames_per_window):
-    i = 0
-    while i < len(y)-nb_frames_per_window:
-        if y[i] != 'no_hit':
-            for j in range(nb_frames_per_window):
-                y[i+j+1] = y[i]
-            i += nb_frames_per_window + 1
-        else:
-            i += 1
-    return y
-
-def get_all_videos_sequences_by_window(video_details_path, clean_dataset_path,
-                                    nb_frames_per_window, nb_videos_test):
-    all_videos_sequences = []
-    all_videos_targets = []
-    test_dict = {}
-
-    video_details = pd.read_csv(video_details_path)
-    df_shots = pd.read_csv(clean_dataset_path)
-    df_shots = df_shots.merge(video_details, on='video_path')
-    df_shots = get_features(df_shots)
-
-    videos_train = df_shots['video_path'].unique()[:-nb_videos_test]
-
-    for video in videos_train:
-        # get video frames
-        all_video_frames = df_shots[df_shots['video_path'] == video]
-        # get sequences of one video
-        X, y = get_video_sequences_by_window(all_video_frames, nb_frames_per_window)
-        # clean y
-        #y = clean_y(y)
-        #y = multiply_targets(y,nb_frames_per_window)
-
-        # add to results
-        if len(all_videos_sequences) > 0:
-            all_videos_sequences = np.vstack((all_videos_sequences, X))
-            all_videos_targets = np.concatenate([all_videos_targets, y])
-        else:
-            all_videos_sequences = X
-            all_videos_targets = y
-
-    videos_test = df_shots['video_path'].unique()[-nb_videos_test:]
-    for video in videos_test:
-        # get video frames
-        all_video_frames = df_shots[df_shots['video_path'] == video]
-        # get sequences of one video
-        X, y = get_video_sequences_by_window(all_video_frames, nb_frames_per_window)
-        # clean y
-        #y = clean_y(y)
-        #y = multiply_targets(y,nb_frames_per_window)
-
-        test_dict[video] = (X,y)
-
-    return df_shots, all_videos_sequences, all_videos_targets, test_dict
-
-
-
 def get_video_sequences_for_predict(all_video_frames, nb_frame_per_window):
 
     sequences = []
