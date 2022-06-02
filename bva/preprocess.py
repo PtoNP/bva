@@ -193,7 +193,17 @@ def get_video_sequences_for_predict(all_video_frames, nb_frame_per_window):
                     frame.br_corner_x_nrm,
                     frame.br_corner_y_nrm,
                     frame.bl_corner_x_nrm,
-                    frame.bl_corner_y_nrm]
+                    frame.bl_corner_y_nrm,
+                    frame.player_A_visible,
+                    frame.player_B_visible,
+                    frame.player_A_court_x_nrm,
+                    frame.player_A_court_y_nrm,
+                    frame.player_B_court_x_nrm,
+                    frame.player_B_court_y_nrm,
+                    frame.player_A_img_x_nrm,
+                    frame.player_A_img_y_nrm,
+                    frame.player_B_img_x_nrm,
+                    frame.player_B_img_y_nrm]
         all_features.append(features)
 
     while counter < len(all_features) - nb_frame_per_window:

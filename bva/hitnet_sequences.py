@@ -5,7 +5,7 @@ from preprocess import get_features
 import params
 
 def get_video_sequences(video_frames):
-    video_frames.reset_index(inplace=True)
+    video_frames = video_frames.reset_index()
 
     sequences = []
     targets = []
@@ -47,6 +47,10 @@ def get_video_sequences(video_frames):
                 break
         else:
             id_hit = video_frames[idx:idx+12].index[video_frames["birdie_hit"][idx:idx+12]==1].to_list()[0]
+            # start of sequence is below index 0 => try loop at next index
+            if id_hit-6<0:
+                idx +=1
+                continue
             for ind, frame in video_frames[id_hit-6:id_hit+6].iterrows():
                 features = [frame.birdie_visible,
                             frame.birdie_x_nrm,
@@ -85,7 +89,8 @@ def get_sequences_by_video(df_url, vid_url, play_url):
     df = pd.read_csv(df_url)
     video_details = pd.read_csv(vid_url)
     play_details = pd.read_csv(play_url)
-    df = df.merge(video_details, on='video_path').merge(play_details, on='video_path')
+    df = df.merge(video_details, on='video_path')
+    df = df.merge(play_details, on=['video_path', 'frame'])
     df_shots = get_features(df)
 
     videos = df_shots["video_path"].unique()
@@ -112,6 +117,6 @@ if __name__ == "__main__":
     all_videos_sequences, all_videos_targets = get_sequences_by_video(
                                         f'{cur_dir}/data/clean_dataset.csv',
                                         f'{cur_dir}/data/video_details.csv',
-                                        f'{cur_dir}/data/play_details.csv')
-
-    print(all_videos_sequences.shape, all_videos_targets.shape)
+                                        f'{cur_dir}/data/players_positions.csv')
+    unique, counts = np.unique(all_videos_targets, return_counts=True)
+    print(all_videos_sequences.shape, all_videos_targets.shape, f"balance: {unique, counts}")
