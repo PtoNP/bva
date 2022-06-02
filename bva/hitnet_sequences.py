@@ -170,6 +170,7 @@ def get_X_from_tracknet_output(predict_path, video_details_path,
     video_birdie_positions['stroke'] = 'none'
 
     players_details = pd.read_csv(players_positions_path)
+    players_details["video_path"] = video_path
 
     video_birdie_positions = video_birdie_positions.rename(
                         columns = {'Frame':'frame',
@@ -186,9 +187,10 @@ def get_X_from_tracknet_output(predict_path, video_details_path,
 
     video_birdie_positions = video_birdie_positions.merge(video_details, on='video_path')
 
-    video_birdie_positions = get_features(video_birdie_positions)
-
     all_video_frames = video_birdie_positions.merge(players_details, on=['video_path','frame'])
+
+    breakpoint()
+    all_video_frames = get_features(all_video_frames)
 
     X = get_video_sequences_for_predict(all_video_frames, nb_frames_per_window)
 

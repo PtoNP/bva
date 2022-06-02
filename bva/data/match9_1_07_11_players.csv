@@ -1,4 +1,4 @@
-video_path,frame,player_A_visible,player_B_visible,player_A_court_x,player_A_court_y,player_A_img_x,player_A_img_y,player_B_court_x,player_B_court_y,player_B_img_x,player_B_img_y 
+video_path,frame,player_A_visible,player_B_visible,player_A_court_x,player_A_court_y,player_A_img_x,player_A_img_y,player_B_court_x,player_B_court_y,player_B_img_x,player_B_img_y
 match9/rally_video/1_07_11.mp4,0,                          1,1,                          341,292,                          411,628,                          1016,372,                          562,710
 match9/rally_video/1_07_11.mp4,1,                          1,1,                          341,292,                          411,628,                          1005,373,                          559,711
 match9/rally_video/1_07_11.mp4,2,                          1,1,                          341,292,                          411,628,                          1005,372,                          559,710
