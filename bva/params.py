@@ -5,3 +5,5 @@ CLASSES = ['clear', 'drive', 'drop', 'full_smash', 'half_smash', 'lift',
 THRESHOLD = 0.5
 COURT_WIDTH = 670
 COURT_HEIGHT = 1340
+
+FINAL_PREDICT_PROBA_THRESHOLD = 0.75

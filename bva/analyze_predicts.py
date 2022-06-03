@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-
+import params
 
 def set_hit(hit_proba, threshold):
     if hit_proba >= threshold:
@@ -43,5 +43,6 @@ def find_final_predict_from_hitnet(hitnet_predict_path, proba_threshold):
 
 
 if __name__ == "__main__":
-    result = find_final_predict_from_hitnet('./data/hitnet_predict_match9_1_07_11.csv', 0.9)
+    result = find_final_predict_from_hitnet('./data/hitnet_predict_match9_1_07_11.csv',
+                             params.FINAL_PREDICT_PROBA_THRESHOLD)
     print(result[result['hit'] == 1])

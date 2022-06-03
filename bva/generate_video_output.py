@@ -4,6 +4,7 @@ import os
 import numpy as np
 from players_positions.generate_output import generate_hitmap
 from bva.analyze_predicts import find_final_predict_from_hitnet
+import params
 
 OUTPUT_WIDTH = 1000
 
@@ -64,7 +65,8 @@ def output_video(input_video_path, birdie_csv_path,
     cap = cv2.VideoCapture(input_video_path)
     birdie_positions = pd.read_csv(birdie_csv_path)
 
-    hits_df = find_final_predict_from_hitnet(hitnet_predict_path, 0.75)
+    hits_df = find_final_predict_from_hitnet(hitnet_predict_path,
+                                    params.FINAL_PREDICT_PROBA_THRESHOLD)
     hitmaps = generate_hitmap(players_positions_path, hits_df)
 
     success, image = cap.read()
