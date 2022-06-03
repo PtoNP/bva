@@ -9,6 +9,8 @@ raw_data/
 
 ./input_data/
 
+!/bva/data/hitnet_predict_match9_1_07_11_newmodel.csv
+!/bva/data/hitnet_predict_match2_1_00_02.csv
 !/bva/data/hitnet_predict_match9_1_07_11.csv
 !bva/data/clean_dataset.csv
 !bva/data/video_details.csv
