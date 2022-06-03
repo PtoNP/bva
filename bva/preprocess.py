@@ -183,6 +183,18 @@ def get_X_from_tracknet_output(predict_path, video_details_path, nb_frames_per_w
 
     return X
 
+def add_stroke_cat_to_dataset(clean_df):
+
+    def set_att_def(x):
+        if x in ['short_serve','drop','net_shot','drive','half_smash','full_smash','net_kill']:
+            return 'att'
+        if x in ['long_serve','lob','clear','short_def','lift','long_def']:
+            return 'def'
+        return 'no_hit'
+
+    clean_df['stroke_cat'] = clean_df.apply(lambda x: set_att_def(x['stroke']), axis=1)
+    return clean_df
+
 
 if __name__ == "__main__":
     FRAMES_PER_WINDOW = 5

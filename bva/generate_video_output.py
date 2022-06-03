@@ -2,6 +2,9 @@ import pandas as pd
 import cv2
 import os
 import numpy as np
+from players_positions.generate_output import generate_hitmap
+from bva.analyze_predicts import find_final_predict_from_hitnet
+import params
 
 OUTPUT_WIDTH = 1000
 
@@ -36,18 +39,19 @@ def image_resize(image, width = None, height = None, inter = cv2.INTER_AREA):
     # return the resized image
     return resized
 
-def prepare_canvas(frame):
+def prepare_canvas(frame, hitmap):
     # resize scene frame
     scene = frame.copy()
-    #print(scene.shape)
-    scene = image_resize(scene, width=800)
-    #print(scene.shape)
+    scene = image_resize(scene, height=600)
+    hitmap = hitmap.copy()
+    hitmap = image_resize(hitmap, height=600)
     # create black image
-    canvas = np.zeros((scene.shape[0], OUTPUT_WIDTH,3), np.uint8)
+    canvas = np.zeros((scene.shape[0], scene.shape[1] + hitmap.shape[1],3), np.uint8)
     # pase image into canvas
     #print(scene.shape)
     canvas[0:scene.shape[0],0:scene.shape[1]] = scene
-    return canvas, scene
+    canvas[0:scene.shape[0],scene.shape[1]:] = hitmap
+    return canvas, scene, hitmap
 
 def apply_ratio(original_image, resized_image, birdie_xy):
     rx = resized_image.shape[1] / original_image.shape[1]
@@ -56,16 +60,19 @@ def apply_ratio(original_image, resized_image, birdie_xy):
     return (int(birdie_xy['X'] * rx), int(birdie_xy['Y'] * ry))
 
 
-def output_video(input_video_path, birdie_csv_path, strokes_csv_path):
-    #print(input_video_path)
+def output_video(input_video_path, birdie_csv_path,
+                    players_positions_path, hitnet_predict_path):
     cap = cv2.VideoCapture(input_video_path)
     birdie_positions = pd.read_csv(birdie_csv_path)
-    strokes = pd.read_csv(strokes_csv_path)
+
+    hits_df = find_final_predict_from_hitnet(hitnet_predict_path,
+                                    params.FINAL_PREDICT_PROBA_THRESHOLD)
+    hitmaps = generate_hitmap(players_positions_path, hits_df)
 
     success, image = cap.read()
-    canvas, scene = prepare_canvas(image)
+    canvas, scene, hitmap = prepare_canvas(image, hitmaps[0])
     size = (canvas.shape[1], canvas.shape[0])
-    fps = 30
+    fps = cap.get(cv2.CAP_PROP_FPS)
 
     if input_video_path[-3:] == 'avi':
         fourcc = cv2.VideoWriter_fourcc(*'DIVX')
@@ -79,8 +86,7 @@ def output_video(input_video_path, birdie_csv_path, strokes_csv_path):
 
     count = 0
     birdie_history = []
-    stroke_history = []
-    while success:
+    while success and count < len(hitmaps):
         if count < len(birdie_positions):
             birdie = birdie_positions.loc[count]
             birdie = apply_ratio(image, scene, birdie)
@@ -88,23 +94,11 @@ def output_video(input_video_path, birdie_csv_path, strokes_csv_path):
                 birdie_history = birdie_history[-3:0]
             birdie_history.append(birdie)
 
-        if count < len(strokes):
-            stroke = str(strokes.loc[count]['stroke'])
-            if stroke != 'nan':
-                if len(stroke_history) > 19:
-                    stroke_history = stroke_history[1:]
-                stroke_history.append(stroke)
-
-        canvas, scene = prepare_canvas(image)
+        canvas, scene, hitmap = prepare_canvas(image, hitmaps[count])
 
         for h in birdie_history:
             cv2.circle(canvas, h, 5, (0,0,255), -1)
 
-        sh_counter = 0
-        for s in stroke_history:
-            font = cv2.FONT_HERSHEY_SIMPLEX
-            cv2.putText(canvas, s, (810, 50 + 20*sh_counter),font,0.6,(0,255,0), 1, cv2.LINE_AA)
-            sh_counter  += 1
         out.write(canvas)
 
         count = count + 1
@@ -114,8 +108,9 @@ def output_video(input_video_path, birdie_csv_path, strokes_csv_path):
 
 if __name__ == '__main__':
     cur_dir = os.path.dirname(os.path.realpath(__file__))
-    test_video_path = f'{cur_dir}/../raw_data/01_TRAIN/match2/rally_video/1_00_02.mp4'
-    birdie_csv_path = f'{cur_dir}/../raw_data/1_00_02_predict.csv'
-    strokes_csv_path = f'{cur_dir}/../raw_data/1_00_02_strokes.csv'
+    test_video_path = f'{cur_dir}/../raw_data/01_TRAIN/match9/rally_video/1_07_11.mp4'
+    birdie_csv_path = f'{cur_dir}/data/match9_1_07_11_predict.csv'
+    players_csv_path = f'{cur_dir}/data/match9_1_07_11_players.csv'
+    hitnet_csv_path = f'{cur_dir}/data/hitnet_predict_match9_1_07_11.csv'
 
-    output_video(test_video_path, birdie_csv_path, strokes_csv_path)
+    output_video(test_video_path, birdie_csv_path, players_csv_path, hitnet_csv_path)

@@ -94,6 +94,8 @@ class CourtContext:
     width = int(self.up_right_corner[1] - self.up_left_corner[1])
     height = int(self.bottom_left_corner[0] - self.up_left_corner[0])
     img = np.zeros((height,width,3), np.uint8)
+    img[:,:,:] = (0,255,0)
+
     cv2.line(img, (self.up_left_corner[1], self.up_left_corner[0]), (self.up_right_corner[1], self.up_right_corner[0]), (255, 255, 255), 2)
     cv2.line(img, (self.up_service_left[1], self.up_service_left[0]), (self.up_service_right[1], self.up_service_right[0]), (255, 255, 255), 2)
     cv2.line(img, (self.bottom_service_left[1], self.bottom_service_left[0]), (self.bottom_service_right[1], self.bottom_service_right[0]), (255, 255, 255), 2)
@@ -111,5 +113,9 @@ class CourtContext:
 
   def drawImagePositionOnCourt(self, img, imagePosition, radius = 10, color = (0, 0, 255)):
     courtPosition = self.getCourtPointFromImagePoint(imagePosition)
+    cv2.circle(img, (courtPosition[1],courtPosition[0]), radius, color, 2)
+    return img
+
+  def drawCourtPosition(self, img, courtPosition, radius = 10, color = (0, 0, 255)):
     cv2.circle(img, (courtPosition[1],courtPosition[0]), radius, color, 2)
     return img
