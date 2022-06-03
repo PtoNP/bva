@@ -135,7 +135,9 @@ if tmp_path is not None:
 
     if st.button('Start video augmentation'):
         subprocess.run(["python", "main_bva.py", tmp_path])
+        df = pd.read_csv(f"{tmp_path}/match_video_input_predict.csv")
+        st.dataframe(df)
 
 
     # list files in a folder
-    # if glob.glob(f"{tmp_path}/*.csv")[0] == f"{tmp_path}/video_details_input.csv":
+    # if glob.glob(f"{tmp_path}/*_predict*")[0] == f"{tmp_path}/video_details_input.csv":
