@@ -6,6 +6,10 @@ from PIL import Image
 import pandas as pd
 import uuid
 import os
+import subprocess
+import glob
+
+st.set_page_config(page_title="BVA", page_icon="🏸", layout="centered")
 
 video_to_load = True
 
@@ -39,14 +43,14 @@ if video_input is not None and video_to_load:
     if not os.path.exists(tmp_path):
         os.mkdir(tmp_path)
 
-    with open(os.path.join(tmp_path,"video_input.mp4"),"wb") as f:
+    with open(os.path.join(tmp_path,"match_video_input.mp4"),"wb") as f:
         f.write(video_input.getbuffer())
 
     # Download image (400x600)
     if tmp_path is not None:
         img_path = os.path.join(tmp_path,"image_mask.jpg")
         if video_input is not None :
-            capture = cv.VideoCapture(os.path.join(tmp_path,"video_input.mp4"))
+            capture = cv.VideoCapture(os.path.join(tmp_path,"match_video_input.mp4"))
             fps = capture.get(cv.CAP_PROP_FPS)
             st.session_state['fps'] = fps
             has_next, frame = capture.read()
@@ -120,10 +124,18 @@ if tmp_path is not None:
 
         # st.dataframe(objects_show_df)
 
-        list_head = ["video-input.mp4", fps, int(w), int(h) ]
+        list_head = ["match_video_input.mp4", fps, int(w), int(h) ]
         list_canvas = objects_show_df.T.unstack().to_list()
         list_final = list_head + list_canvas
 
-        video_detail_input = pd.DataFrame ([list_final], index =[1], columns = columns)
+        video_detail_input = pd.DataFrame ([list_final], index =[0], columns = columns)
 
         video_detail_input.to_csv(df_path)
+
+
+    if st.button('Start video augmentation'):
+        subprocess.run(["python", "main_bva.py", tmp_path])
+
+
+    # list files in a folder
+    # if glob.glob(f"{tmp_path}/*.csv")[0] == f"{tmp_path}/video_details_input.csv":

@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from extract_players_positions import ExtractPlayersPositions
+from players_positions.extract_players_positions import ExtractPlayersPositions
 
 def generate_all_videos_players_positions(path_to_videos, details_csv_path):
     counter = 0

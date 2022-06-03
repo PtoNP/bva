@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
 import cv2
-from court_context import CourtContext, SIDE_UP, SIDE_BOTTOM
+from players_positions.court_context import CourtContext, SIDE_UP, SIDE_BOTTOM
 
 class PlayerData:
   def __init__(self, video_path, name, side, fps, bcc):

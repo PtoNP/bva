@@ -2,9 +2,9 @@ import numpy as np
 import pandas as pd
 import os
 import cv2
-from person_detection import DetectorAPI
-from court_context import CourtContext, SIDE_UP, SIDE_BOTTOM
-from player_data import PlayerData
+from players_positions.person_detection import DetectorAPI
+from players_positions.court_context import CourtContext, SIDE_UP, SIDE_BOTTOM
+from players_positions.player_data import PlayerData
 
 class ExtractPlayersPositions:
   def __init__(self, video_path, match_name):
@@ -144,7 +144,7 @@ class ExtractPlayersPositions:
   def ExportPlayersPositionsToCSV(self, filename):
     textfile = open(filename, "w")
     counter_frame = 0
-    textfile.write(f'video_path,frame,player_A_visible,player_B_visible,player_A_court_x,player_A_court_y,player_A_img_x,player_A_img_y,player_B_court_x,player_B_court_y,player_B_img_x,player_B_img_y \n')
+    textfile.write(f'video_path,frame,player_A_visible,player_B_visible,player_A_court_x,player_A_court_y,player_A_img_x,player_A_img_y,player_B_court_x,player_B_court_y,player_B_img_x,player_B_img_y\n')
 
     for i in range(len(self.PlayerData_A.rawPositions)):
         if self.PlayerData_A.rawPositions[i]:
