@@ -1,33 +1,47 @@
 import numpy as np
+import pandas as pd
 
-def find_best_targets(classes, targets_probas, threshold):
-    predicts = []
 
-    for target_probas in targets_probas:
-        selected_idxs = []
-        selected_values = []
-        count = 0
-        for proba in target_probas:
-            if proba > threshold:
-                selected_idxs.append(count)
-                selected_values.append(proba)
-            count += 1
-        if len(selected_values) > 0:
-            max_value = max(selected_values)
-            max_index = selected_values.index(max_value)
-            idx_class = selected_idxs[max_index]
-            predicts.append(classes[idx_class])
+def set_hit(hit_proba, threshold):
+    if hit_proba >= threshold:
+        return 1
+    return 0
+
+def set_final_hit(x, idxs):
+    if x-6 in idxs:
+        return 1
+    return 0
+
+def find_final_predict_from_hitnet(hitnet_predict_path, proba_threshold):
+    hitnet_predict = pd.read_csv(hitnet_predict_path)
+    df = hitnet_predict.rename( columns = {'index':'frame', '0': 'no_hit_proba', '1': 'hit_proba'})
+
+    df['hit'] = df.apply(lambda x: set_hit(x['hit_proba'], proba_threshold), axis=1)
+
+    start_idx = -1
+    end_idx = -1
+    hit_idxs = []
+    for i in range(len(df)):
+        hit = df.loc[i]['hit']
+        if hit == 1:
+            if start_idx > 0:
+                end_idx = i
+            else:
+                start_idx = i
+                end_idx = i
         else:
-            predicts.append('no_hit')
+            if start_idx > 0:
+                hit_idxs.append(int(start_idx + (end_idx - start_idx)/2))
+                start_idx = -1
+                end_idx = -1
 
-    return predicts
+    df['hit'] = df.apply(lambda x: set_final_hit(x['frame'], hit_idxs), axis=1)
 
-if __name__ == '__main__':
-    test_classes = ['a', 'b', 'c', 'd', 'e', 'f']
-    test_targets_probas = [
-        [0.1,0.2,0.3,0.4,0.5,0.6],
-        [0.1,0.2,0.3,0.4,0.75,0.76],
-        [0.1,0.2,0.3,0.74,0.76,0.75]
-    ]
+    result = df.drop(columns=['no_hit_proba', 'hit_proba'])
 
-    print(find_best_targets(test_classes, test_targets_probas, 0.7))
+    return result
+
+
+if __name__ == "__main__":
+    result = find_final_predict_from_hitnet('./data/hitnet_predict_match9_1_07_11.csv', 0.9)
+    print(result[result['hit'] == 1])
