@@ -1,5 +1,5 @@
 import os
-from preprocess import get_all_videos_sequences_by_window
+# from preprocess import get_all_videos_sequences_by_window
 import params
 from hitnet_sequences import get_sequences_by_video
 from tensorflow.keras.preprocessing.sequence import pad_sequences
@@ -22,8 +22,7 @@ def get_data():
     X, y, test_dict = get_sequences_by_video(
                                         f'{cur_dir}/data/clean_dataset.csv',
                                         f'{cur_dir}/data/video_details.csv',
-                                        f'{cur_dir}/data/players_positions.csv',
-                                        1)
+                                        f'{cur_dir}/data/players_positions.csv')
     return X, y, test_dict
 
 def init_model():
