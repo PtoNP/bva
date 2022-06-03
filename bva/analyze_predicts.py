@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import params
+import bva.params
 
 def set_hit(hit_proba, threshold):
     if hit_proba >= threshold:
