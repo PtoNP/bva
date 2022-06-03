@@ -3,6 +3,9 @@ pip>=9
 setuptools>=26
 twine
 wheel>=0.29
+streamlit
+Image
+cv2
 
 # data science
 numpy
