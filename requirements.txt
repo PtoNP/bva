@@ -6,6 +6,7 @@ wheel>=0.29
 streamlit
 Image
 cv2
+streamlit_drawable_canvas
 
 # data science
 numpy
