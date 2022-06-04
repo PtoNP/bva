@@ -1,5 +1,5 @@
 import pandas as pd
-from bva.players_positions.court_context import CourtContext
+from players_positions.court_context import CourtContext
 
 def generate_hitmap(players_positions_path, hits_df):
 

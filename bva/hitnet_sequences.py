@@ -192,8 +192,6 @@ def get_X_from_tracknet_output(predict_path, video_details_path,
 
     return X
 
-
-
 if __name__ == "__main__":
     cur_dir = os.path.dirname(os.path.realpath(__file__))
     all_videos_sequences, all_videos_targets, test_dict = get_sequences_by_video(
