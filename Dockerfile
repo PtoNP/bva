@@ -1,4 +1,4 @@
-FROM nvidia/cuda:10.2-base
+FROM tensorflow/tensorflow:latest-gpu
 
  #set environment variables
  ENV LC_ALL C.UTF-8
@@ -13,6 +13,11 @@ FROM nvidia/cuda:10.2-base
  RUN apt-get install -y ffmpeg x264 libx264-dev
  
  # install python 3.7
+ RUN apt update
+ RUN apt install -y software-properties-common
+ RUN add-apt-repository ppa:deadsnakes/ppa   
+ RUN apt-get update   
+ RUN apt install -y python3.7-distutils
  RUN apt -y install python3.7
  RUN apt-get -y install python3-pip
  RUN python3.7 -m pip install --upgrade pip
@@ -39,6 +44,10 @@ FROM nvidia/cuda:10.2-base
  RUN apt update
  RUN apt install libgl1-mesa-glx -y
  
+ RUN pip3 install --upgrade requests
+ 
+ RUN pip3 install tensorflow==2.6.0
+ 
  # RUN python3.7 /bva/hitnet_model.py
  
  EXPOSE 8080
@@ -47,7 +56,28 @@ FROM nvidia/cuda:10.2-base
  # docker run --gpus all -p80:8501
  
  
- # deploy on gcloud 
+ # DEPLOY TO gcloud 
  # docker tag bva eu.gcr.io/lewagondata864/bva
  # docker push eu.gcr.io/lewagondata864/bva
  # gcloud container images list-tags eu.gcr.io/lewagondata864/bva
+
+
+ # VM
+ # cos-extensions install gpu
+ # docker-credential-gcr configure-docker
+ 
+ # sudo mount --bind /var/lib/nvidia /var/lib/nvidia
+ # sudo mount -o remount,exec /var/lib/nvidia
+ # /var/lib/nvidia/bin/nvidia-smi
+ 
+ # docker run \
+ #	--volume /usr/lib/nvidia/lib64:/usr/local/nvidia/lib64 \
+ #	--volume /usr/lib/nvidia/bin:/usr/local/nvidia/bin \
+  #  --device /dev/nvidia0:/dev/nvidia0 \
+   # --device /dev/nvidia-uvm:/dev/nvidia-uvm \
+    #--device /dev/nvidiactl:/dev/nvidiactl \
+    # --gpus all -p 80:8080 eu.gcr.io/lewagondata864/bva
+	
+	
+  # import tensorflow as tf
+  # tf.config.list_physical_devices('GPU')
