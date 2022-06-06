@@ -1,35 +1,44 @@
 # packaging
+cython
 pip>=9
-setuptools>=26
+setuptools
 twine
-wheel>=0.29
-streamlit
+wheel
+streamlit==1.5.0
 Image
-cv2
 streamlit_drawable_canvas
+piexif
+Pillow
+imutils
+opencv-python
+PyMySQL
+#pyqt5
 
 # data science
 numpy
 pandas
 matplotlib
 scikit-learn
-tensorflow
+keras==2.6.0
 
 # tests/linter
-black
-coverage
-flake8
-pytest
-yapf
+#black
+#coverage
+#flake8
+#pytest
+#yapf
 
 # API
 gcsfs
-google-cloud-storage
-mlflow
-s3fs
+#google-cloud-storage
+#mlflow
+#s3fs
 
 # utilities
-six>=1.14
-joblib
-memoized-property
-termcolor
+#six>=1.14
+joblib==1.1.0
+#memoized-property
+#termcolor
+
+
+click==8.0.0

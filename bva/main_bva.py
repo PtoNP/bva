@@ -1,37 +1,41 @@
 import os
 import pandas as pd
-import sys
 from players_positions.generate_players_positions import generate_video_players_positions
-from load_predict import predict_shots
-from analyze_predicts import find_final_predict_from_hitnet
-from generate_video_output import output_video
+from hitnet_model import hitnet_predict_shots
+from video_output import generate
 import params
 
-path = sys.argv[1]
-video_input = f"{path}/match_video_input.mp4"
-csv_details = f"{path}/video_details_input.csv"
+class BvaMain:
+    def __init__(self, tmp_path):
+        self.tmp_path = tmp_path
+        self.video_input_path =  f"{tmp_path}/match_video_input.mp4"
+        self.video_details_path = f"{tmp_path}/video_details_input.csv"
+        self.predict_csv_path = f"{tmp_path}/match_video_input_predict.csv"
+        self.players_csv_path = f"{tmp_path}/match_video_input_players.csv"
+        self.hitnet_model_path = "/bva/models/hitnet"
+        self.hitnet_probas_path = f"{tmp_path}/hitnet_probas.csv"
+        self.output_path = f"{tmp_path}/match_video_output.mp4"
+        
+        self.tracknet_predict_path = os.path.abspath("../../TrackNetv2/3_in_3_out/predict3.py")
+        self.tracknet_weight_path = os.path.abspath("../../TrackNetv2/3_in_3_out/model906_30")
 
-# 1/ TrackNetV2 call in Shell
-tracknet_path = os.path.abspath("../../TrackNetv2/3_in_3_out/predict3.py")
-weight_path = os.path.abspath("../../TrackNetv2/3_in_3_out/model906_30")
-cmd = f"python {tracknet_path} --video_name={video_input} --load_weights={weight_path}"
-os.system(cmd)
-predict_csv = f"{path}/match_video_input_predict.csv"
+    def run_tracknetv2(self):
+        cmd = f"python3.7 {self.tracknet_predict_path} --video_name={self.video_input_path} --load_weights={self.tracknet_weight_path}"
+        os.system(cmd)
+        print('Tracknet done')
 
+    def run_players_detection(self):
+        generate_video_players_positions(self.video_input_path, self.video_details_path)
+        print('Players positions done')
 
-# 2/ Players Positions
-## generate_video_players_positions(video_input, csv_details)
+    def run_hitnet(self):       
+        y_pred = hitnet_predict_shots(self.predict_csv_path, self.video_details_path, self.players_csv_path, self.hitnet_model_path)
+        hit_probas_df = pd.DataFrame(y_pred)
+        hit_probas_df.index.name = "index"
+        hit_probas_df.to_csv(self.hitnet_probas_path)
+        print('HitNet done')
+    
+    def run_build_augmented_video(self):
+        generate(self.video_input_path, self.predict_csv_path, self.players_csv_path, self.hitnet_probas_path, self.output_path)
+        print('Build Final Video done')
 
-
-# 3/ HitNet
-# Get hits probas
-# play_det_csv = f"{path}/match_video_input_players.csv"
-# y_pred = predict_shots(predict_csv, csv_details, play_det_csv, "hitnet_trained_2vidtests.sav")
-# hit_probas_df = pd.DataFrame(y_pred)
-# hit_probas_df.index.name = "index"
-# hit_probas_df.to_csv(f"{path}/hitnet_probas.csv")
-# hit_probas_csv = f"{path}/hitnet_probas.csv"
-
-
-# # 4/ Build augmented video
-# output_video(video_input, predict_csv, play_det_csv, hit_probas_csv)
