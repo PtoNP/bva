@@ -88,7 +88,6 @@ def get_all_videos_sequences(clean_dataset_path, video_details_path, players_pat
 
     counter = 0
     for video in videos:
-        print(video)
         all_video_frames = df_shots[df_shots["video_path"]==video]
         X, y = get_video_sequences_by_hit(all_video_frames)
 
