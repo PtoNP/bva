@@ -16,17 +16,17 @@ sudo apt-get install \
     curl \
     gnupg \
     lsb-release
-	
+
 sudo mkdir -p /etc/apt/keyrings
  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
- 
+
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-  
+
 sudo apt-get update
  sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
- 
+
 sudo chmod 666 /var/run/docker.soc
 
 sudo usermod -a -G docker ${USER}
@@ -48,3 +48,30 @@ docker run --gpus all -p 80:8080 eu.gcr.io/lewagondata864/bva
 #2
 curl https://raw.githubusercontent.com/GoogleCloudPlatform/compute-gpu-installation/main/linux/install_gpu_driver.py --output install_gpu_driver.py
 sudo python3 install_gpu_driver.py
+
+
+
+#3 install git on vm
+# start instance, connect through ssh
+# to run once
+sudo apt update
+sudo apt install git
+git clone https://github.com/fransoa2607/bva.git
+
+
+
+
+#4 update bva files inside docker container
+# inside vm instance
+cd bva
+git pull origin master
+docker kill $(docker ps -q) # kill current docker bva2
+docker run -it --gpus all -p 80:8080 -e TF_FORCE_GPU_ALLOW_GROWTH=true \
+       --mount type=bind,source="$(pwd)",target=/github_bva \
+       --entrypoint=/bin/bash eu.gcr.io/lewagondata864/bva2
+
+# inside docker container
+cp -r github_bva/bva bva
+
+# start streamlit
+streamlit run --server.port 8080 --browser.serverAddress 0.0.0.0 --server.enableCORS False --server.enableXsrfProtection False bva/gui_app.py
