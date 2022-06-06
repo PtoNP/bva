@@ -58,7 +58,8 @@ def get_video_sequences_by_hit(video_frames, for_predict=False):
             sequence_target = target
             window_frames_features.append(features)
         else:
-            window_frames_features.append(features)
+            if sequence_started:
+                window_frames_features.append(features)
 
     # append last current sequence
     shape = np.shape(window_frames_features)
