@@ -11,6 +11,8 @@ import glob
 from os.path import exists
 from main_bva import BvaMain
 import time
+from analyze_predicts import find_final_predict_from_hitnet
+import params
 
 st.set_page_config(page_title="BVA", page_icon="🏸", layout="centered")
 
@@ -134,29 +136,33 @@ if tmp_path is not None:
         video_detail_input = pd.DataFrame ([list_final], index =[0], columns = columns)
 
         video_detail_input.to_csv(df_path)
-    
+
     if st.button('Start video augmentation'):
         bva = BvaMain(tmp_path)
         bva.run_tracknetv2()
         bva.run_players_detection()
         bva.run_hitnet()
-        bva.run_build_augmented_video()      
-        
+        bva.run_build_augmented_video()
+
         st.session_state['video_path'] = bva.video_input_path
         st.session_state['video_details_path'] = bva.video_details_path
         st.session_state['predict_csv'] = bva.predict_csv_path
         st.session_state['hit_probas_csv'] =  bva.hitnet_probas_path
-        st.session_state['output_path'] = bva.output_path       
+        st.session_state['output_path'] = bva.output_path
 
     if 'hit_probas_csv' in st.session_state and exists(st.session_state['hit_probas_csv']):
         df = pd.read_csv(st.session_state['hit_probas_csv'])
-        st.dataframe(df)
-   
+
+        hits_df = find_final_predict_from_hitnet(hitnet_predict_path,
+                                    params.FINAL_PREDICT_PROBA_THRESHOLD)
+
+        st.dataframe(df.merge(hits_df, left_on='index',right_on='frame'))
+
     video_to_show = None
     if 'output_path' in st.session_state and exists(st.session_state['output_path']):
-        video_to_show = st.session_state['output_path']    
-        if video_to_show:      
+        video_to_show = st.session_state['output_path']
+        if video_to_show:
             if exists(os.path.abspath(video_to_show)):
                 with open(os.path.abspath(video_to_show), 'rb') as v:
-                    st.download_button('Download result video', v, file_name='output.mp4') 
+                    st.download_button('Download result video', v, file_name='output.mp4')
                     #st.video(v)

@@ -71,7 +71,7 @@ docker run -it --gpus all -p 80:8080 -e TF_FORCE_GPU_ALLOW_GROWTH=true \
        --entrypoint=/bin/bash eu.gcr.io/lewagondata864/bva2
 
 # inside docker container
-cp -r github_bva/bva bva
+cp -r github_bva/bva/* bva
 
 # start streamlit
 streamlit run --server.port 8080 --browser.serverAddress 0.0.0.0 --server.enableCORS False --server.enableXsrfProtection False bva/gui_app.py
