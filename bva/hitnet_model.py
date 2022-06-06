@@ -31,7 +31,7 @@ def hitnet_model():
     model.add(layers.GRU(units=64, activation='tanh', return_sequences=True))
     model.add(layers.GRU(units=16, activation='tanh', return_sequences=False))
     model.add(layers.Dense(8, activation='relu'))
-    model.add(layers.Dense(1, activation='sigmoid'))
+    model.add(layers.Dense(2, activation='softmax'))
     # Compilation
     model.compile(loss='binary_crossentropy',
                     optimizer="adam",
