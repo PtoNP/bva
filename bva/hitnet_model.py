@@ -48,7 +48,8 @@ def hitnet_fitting(model, X_train, y_train, X_val, y_val):
 # Hitnet RNN training
 def hitnet_training(filename='/bva/models/hitnet'):
     X, y, test_dict = hitnet_get_data()
-    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2)
+    y_cat = to_categorical(y)
+    X_train, X_val, y_train, y_val = train_test_split(X, y_cat, test_size=0.2)
     model = hitnet_model()
     model, history = hitnet_fitting(model, X_train, y_train, X_val, y_val)
     save_model(model, filename)
