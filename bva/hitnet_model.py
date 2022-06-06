@@ -31,9 +31,9 @@ def hitnet_model():
     model.add(layers.GRU(units=64, activation='tanh', return_sequences=True))
     model.add(layers.GRU(units=16, activation='tanh', return_sequences=False))
     model.add(layers.Dense(8, activation='relu'))
-    model.add(layers.Dense(2, activation='sigmoid'))
+    model.add(layers.Dense(1, activation='sigmoid'))
     # Compilation
-    model.compile(loss='categorical_crossentropy',
+    model.compile(loss='binary_crossentropy',
                     optimizer="adam",
                     metrics=["accuracy"])
     return model
@@ -48,13 +48,12 @@ def hitnet_fitting(model, X_train, y_train, X_val, y_val):
 # Hitnet RNN training
 def hitnet_training(filename='/bva/models/hitnet'):
     X, y, test_dict = hitnet_get_data()
-    y_cat = to_categorical(y)
-    X_train, X_val, y_train, y_val = train_test_split(X, y_cat, test_size=0.2)
+    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2)
     model = hitnet_model()
     model, history = hitnet_fitting(model, X_train, y_train, X_val, y_val)
     save_model(model, filename)
     return model, history, test_dict
-    
+
 
 def hitnet_predict_shots(predict_path, video_details_path, players_positions_path, mod_url):
     X_test = get_X_from_tracknet_output(predict_path, video_details_path,
@@ -63,7 +62,7 @@ def hitnet_predict_shots(predict_path, video_details_path, players_positions_pat
     model = load_model(mod_url)
     y_pred = model.predict(X_test)
 
-    return y_pred    
+    return y_pred
 
 
 if __name__ == "__main__":
