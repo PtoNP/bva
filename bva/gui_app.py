@@ -153,7 +153,7 @@ if tmp_path is not None:
     if 'hit_probas_csv' in st.session_state and exists(st.session_state['hit_probas_csv']):
         df = pd.read_csv(st.session_state['hit_probas_csv'])
 
-        hits_df = find_final_predict_from_hitnet(hitnet_predict_path,
+        hits_df = find_final_predict_from_hitnet(st.session_state['hit_probas_csv'],
                                     params.FINAL_PREDICT_PROBA_THRESHOLD)
 
         st.dataframe(df.merge(hits_df, left_on='index',right_on='frame'))
