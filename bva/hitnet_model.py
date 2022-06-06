@@ -33,7 +33,7 @@ def hitnet_model():
     model.add(layers.Dense(8, activation='relu'))
     model.add(layers.Dense(2, activation='softmax'))
     # Compilation
-    model.compile(loss='binary_crossentropy',
+    model.compile(loss='categorical_crossentropy',
                     optimizer="adam",
                     metrics=["accuracy"])
     return model
