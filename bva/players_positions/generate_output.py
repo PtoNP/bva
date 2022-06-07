@@ -59,10 +59,10 @@ def generate_hitmap(players_positions_path, hits_df, stroke_df):
         img = bcc.drawCourt()
 
         for h in history['player_A']:
-            img = bcc.drawCourtPosition(img, h[0], h[1],filled=True)
+            img = bcc.drawCourtPosition(img, h[0], color=h[1],filled=True)
 
         for h in history['player_B']:
-            img = bcc.drawCourtPosition(img, h[0], h[1],filled=True)
+            img = bcc.drawCourtPosition(img, h[0], color=h[1],filled=True)
 
         pA_x = players_positions.loc[counter]['player_A_court_x']
         pA_y = players_positions.loc[counter]['player_A_court_y']
