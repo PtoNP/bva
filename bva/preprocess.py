@@ -83,3 +83,36 @@ def add_stroke_cat_to_dataset(clean_df):
 
     clean_df['stroke_cat'] = clean_df.apply(lambda x: set_att_def(x['stroke']), axis=1)
     return clean_df
+
+def mirror_data(df_url, vid_url, play_url):
+    court_width = params.COURT_WIDTH
+
+    df = pd.read_csv(df_url)
+    video_details = pd.read_csv(vid_url)
+    df = df.merge(video_details, on='video_path')
+    play_details = pd.read_csv(play_url)
+    df = df.merge(play_details, on=['video_path', 'frame'])
+    print(df.shape)
+    mirror_df = df.copy()
+    print(mirror_df.shape)
+
+    mirror_df['video_path'] = mirror_df.apply(lambda x: x.video_path[:-4]+"_mirr.mp4", axis=1)
+    mirror_df['birdie_x'] = mirror_df.apply(lambda x: x.birdie_x - x.width, axis=1)
+    mirror_df['ul_corner_x'] = mirror_df.apply(lambda x: x.ul_corner_x - x.width, axis=1)
+    mirror_df['ur_corner_x'] = mirror_df.apply(lambda x: x.ur_corner_x - x.width, axis=1)
+    mirror_df['br_corner_x'] = mirror_df.apply(lambda x: x.br_corner_x - x.width, axis=1)
+    mirror_df['bl_corner_x'] = mirror_df.apply(lambda x: x.bl_corner_x - x.width, axis=1)
+    mirror_df['left_net_x'] = mirror_df.apply(lambda x: x.left_net_x - x.width, axis=1)
+    mirror_df['right_net_x'] = mirror_df.apply(lambda x: x.right_net_x - x.width, axis=1)
+    mirror_df['player_A_court_x'] = mirror_df.apply(
+        lambda x: -1 if x.player_A_court_x ==-1 else x.player_A_court_x - court_width, axis=1)
+    mirror_df['player_B_court_x'] = mirror_df.apply(
+        lambda x: -1 if x.player_B_court_x ==-1 else x.player_B_court_x - court_width, axis=1)
+    mirror_df['player_A_img_x'] = mirror_df.apply(
+        lambda x: -1 if x.player_A_img_x ==-1 else x.player_A_img_x - x.width, axis=1)
+    mirror_df['player_B_img_x'] = mirror_df.apply(
+        lambda x: -1 if x.player_B_img_x ==-1 else x.player_B_img_x - x.width, axis=1)
+
+    full_df = pd.concat((df, mirror_df), ignore_index=True)
+    print(full_df.shape)
+    return full_df

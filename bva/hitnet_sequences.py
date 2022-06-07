@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
-from preprocess import get_features
+from preprocess import get_features, mirror_data
 import params
 
 def get_video_sequences(video_frames):
@@ -93,12 +93,18 @@ def get_video_sequences(video_frames):
 
     return np.array(sequences), np.array(targets)
 
-def get_sequences_by_video(df_url, vid_url, play_url):
-    df = pd.read_csv(df_url)
-    video_details = pd.read_csv(vid_url)
-    play_details = pd.read_csv(play_url)
-    df = df.merge(video_details, on='video_path')
-    df = df.merge(play_details, on=['video_path', 'frame'])
+def get_sequences_by_video(df_url, vid_url, play_url, mirror=False):
+    #no data mirroring
+    if not mirror:
+        df = pd.read_csv(df_url)
+        video_details = pd.read_csv(vid_url)
+        df = df.merge(video_details, on='video_path')
+        play_details = pd.read_csv(play_url)
+        df = df.merge(play_details, on=['video_path', 'frame'])
+    #data mirroring
+    else:
+        df = mirror_data(df_url, vid_url, play_url)
+
     df_shots = get_features(df)
 
     videos = df_shots["video_path"].unique()
@@ -110,7 +116,9 @@ def get_sequences_by_video(df_url, vid_url, play_url):
         all_video_frames = df_shots[df_shots["video_path"]==video]
         X, y = get_video_sequences(all_video_frames)
 
-        if video == "match2/rally_video/1_00_02.mp4" or video == "match9/rally_video/1_07_11.mp4":
+        if video == "match2/rally_video/1_00_02.mp4" or video == "match9/rally_video/1_07_11.mp4"\
+            or video == "match2/rally_video/1_00_02_mirr.mp4" \
+                or video =="match9/rally_video/1_07_11_mirr.mp4":
             test_dict[video] = (X,y)
         else:
             # add to results
@@ -120,7 +128,6 @@ def get_sequences_by_video(df_url, vid_url, play_url):
             else:
                 all_videos_sequences = X
                 all_videos_targets = y
-
 
     return all_videos_sequences, all_videos_targets, test_dict
 
