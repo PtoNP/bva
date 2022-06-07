@@ -39,7 +39,7 @@ def image_resize(image, width = None, height = None, inter = cv2.INTER_AREA):
     # return the resized image
     return resized
 
-def prepare_canvas(frame, hitmap):
+def prepare_canvas(frame_count, frame, hitmap, is_hit=False, with_frames_info=False):
     # resize scene frame
     scene = frame.copy()
     scene = image_resize(scene, height=600)
@@ -51,6 +51,24 @@ def prepare_canvas(frame, hitmap):
     #print(scene.shape)
     canvas[0:scene.shape[0],0:scene.shape[1]] = scene
     canvas[0:scene.shape[0],scene.shape[1]:] = hitmap
+
+    # create info box
+    if with_frames_info:
+        infos_width = 100
+        infos_height = 100
+        infos = np.zeros((infos_width, infos_height,3), np.uint8)
+        canvas[
+            0:infos_height, \
+            scene.shape[1]-infos_width:scene.shape[1] \
+            ] = infos
+
+        canvas = cv2.putText(canvas, str(frame_count), (scene.shape[1]-infos_width+20, 30),
+                     cv2.FONT_HERSHEY_SIMPLEX,1, (255, 255, 255), 2, cv2.LINE_AA)
+
+        if is_hit:
+            canvas = cv2.putText(canvas, 'HIT', (scene.shape[1]-infos_width+20, 70),
+                     cv2.FONT_HERSHEY_SIMPLEX,1, (0, 0, 255), 2, cv2.LINE_AA)
+
     return canvas, scene, hitmap
 
 def apply_ratio(original_image, resized_image, birdie_xy):
@@ -60,9 +78,9 @@ def apply_ratio(original_image, resized_image, birdie_xy):
     return (int(birdie_xy['X'] * rx), int(birdie_xy['Y'] * ry))
 
 
-def generate(   input_video_path, 
+def generate(   input_video_path,
                 birdie_csv_path,
-                players_positions_path, 
+                players_positions_path,
                 hitnet_predict_path,
                 output_path):
     cap = cv2.VideoCapture(input_video_path)
@@ -73,7 +91,7 @@ def generate(   input_video_path,
     hitmaps = generate_hitmap(players_positions_path, hits_df)
 
     success, image = cap.read()
-    canvas, scene, hitmap = prepare_canvas(image, hitmaps[0])
+    canvas, scene, hitmap = prepare_canvas(0,image, hitmaps[0], hits_df.iloc[0]['hit'])
     size = (canvas.shape[1], canvas.shape[0])
     fps = cap.get(cv2.CAP_PROP_FPS)
 
@@ -97,7 +115,8 @@ def generate(   input_video_path,
                 birdie_history = birdie_history[-3:0]
             birdie_history.append(birdie)
 
-        canvas, scene, hitmap = prepare_canvas(image, hitmaps[count])
+        canvas, scene, hitmap = prepare_canvas(count, image, hitmaps[count],
+                                    hits_df.iloc[count]['hit'], params.SHOW_INFO)
 
         for h in birdie_history:
             cv2.circle(canvas, h, 5, (0,0,255), -1)
@@ -115,5 +134,7 @@ if __name__ == '__main__':
     birdie_csv_path = f'{cur_dir}/data/match9_1_07_11_predict.csv'
     players_csv_path = f'{cur_dir}/data/match9_1_07_11_players.csv'
     hitnet_csv_path = f'{cur_dir}/data/hitnet_predict_match9_1_07_11.csv'
+    output_path = f'{cur_dir}/../raw_data/01_TRAIN/match9/rally_video/1_07_11_output.mp4'
 
-    generate(test_video_path, birdie_csv_path, players_csv_path, hitnet_csv_path)
+    generate(test_video_path, birdie_csv_path,
+                players_csv_path, hitnet_csv_path, output_path)

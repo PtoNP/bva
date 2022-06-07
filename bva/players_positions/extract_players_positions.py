@@ -98,14 +98,14 @@ class ExtractPlayersPositions:
                 idx_box_A = self.bcc.closestPointToTopT(centers_court)
                 center_A = centers_img[idx_box_A]
                 self.PlayerData_A.AddPosition(center_A)
-                cv2.circle(img, (center_A[0],center_A[1]), 5, (255, 0, 0), -1)
+                #cv2.circle(img, (center_A[0],center_A[1]), 5, (255, 0, 0), -1)
                 del centers_court[idx_box_A]
                 del centers_img[idx_box_A]
 
                 idx_box_B = self.bcc.closestPointToBottomT(centers_court)
                 center_B = centers_img[idx_box_B]
                 self.PlayerData_B.AddPosition(center_B)
-                cv2.circle(img, (center_B[0],center_B[1]), 5, (255, 0, 0), -1)
+                ß#cv2.circle(img, (center_B[0],center_B[1]), 5, (255, 0, 0), -1)
                 del centers_court[idx_box_B]
                 del centers_img[idx_box_B]
 
