@@ -67,7 +67,7 @@ def prepare_canvas(frame_count, frame, hitmap, is_hit=False, with_frames_info=Fa
 
         if is_hit:
             canvas = cv2.putText(canvas, 'HIT', (scene.shape[1]-infos_width+20, 70),
-                     cv2.FONT_HERSHEY_SIMPLEX,1, (0, 0, 255), 2, cv2.LINE_AA)
+                     cv2.FONT_HERSHEY_SIMPLEX,1, (0, 255, 255), 2, cv2.LINE_AA)
 
         canvas = cv2.putText(canvas, 'ATT', (scene.shape[1]-infos_width+20, 100),
                     cv2.FONT_HERSHEY_SIMPLEX,0.7, (255, 0, 0), 2, cv2.LINE_AA)
