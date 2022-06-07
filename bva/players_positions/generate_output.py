@@ -35,6 +35,13 @@ def generate_hitmap(players_positions_path, hits_df, stroke_df):
             else:
                 server = -1
 
+            print(pA_x)
+            print(pB_x)
+            print(bcc.middle_middle[1])
+            print(distance_A_to_middle_line)
+            print(distance_B_to_middle_line)
+            print(server)
+
             break
         counter += 1
 
