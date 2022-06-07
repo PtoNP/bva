@@ -11,10 +11,12 @@ def generate_hitmap(players_positions_path, hits_df, stroke_df):
         players_visible = players_positions.loc[counter]['player_A_visible']
 
         if players_visible:
-            pA_x = players_positions.loc[counter]['player_A_court_x']
-            pA_y = players_positions.loc[counter]['player_A_court_y']
-            pB_x = players_positions.loc[counter]['player_B_court_x']
-            pB_y = players_positions.loc[counter]['player_B_court_y']
+            pA_x = players_positions.loc[counter]['player_A_court_y']
+            pA_y = players_positions.loc[counter]['player_A_court_x']
+            pB_x = players_positions.loc[counter]['player_B_court_y']
+            pB_y = players_positions.loc[counter]['player_B_court_x']
+            # warning player_A_court_y is x
+            # warning player_A_court_x is y
 
             # remove a bit (75cm) of y for B, the front foot is upper
             #distance_A_to_T = ((pA_x - bcc.up_service_middle[1])**2 \
