@@ -17,15 +17,20 @@ def generate_hitmap(players_positions_path, hits_df, stroke_df):
             pB_y = players_positions.loc[counter]['player_B_court_y']
 
             # remove a bit (75cm) of y for B, the front foot is upper
-            distance_A_to_T = ((pA_x - bcc.up_service_middle[1])**2 \
-                             + (pA_y - 75 - bcc.up_service_middle[0])**2 \
-                              )**.5
+            #distance_A_to_T = ((pA_x - bcc.up_service_middle[1])**2 \
+            #                 + (pA_y - 75 - bcc.up_service_middle[0])**2 \
+            #                  )**.5
 
-            distance_B_to_T = ((pB_x - bcc.bottom_service_middle[1])**2 \
-                             + (pB_y - bcc.bottom_service_middle[0])**2 \
-                              )**.5
+            #distance_B_to_T = ((pB_x - bcc.bottom_service_middle[1])**2 \
+            #                 + (pB_y - bcc.bottom_service_middle[0])**2 \
+            #                  )**.5
 
-            if distance_A_to_T < distance_B_to_T:
+            distance_A_to_middle_line = abs(pA_x - bcc.middle_middle[1])
+            distance_B_to_middle_line = abs(pB_x - bcc.middle_middle[1])
+
+
+            #if distance_A_to_T < distance_B_to_T:
+            if distance_A_to_middle_line < distance_B_to_middle_line:
                 server = 1
             else:
                 server = -1
