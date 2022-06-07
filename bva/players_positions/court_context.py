@@ -106,6 +106,8 @@ class CourtContext:
     cv2.line(img, (self.bottom_middle[1], self.bottom_middle[0]), (self.bottom_service_middle[1], self.bottom_service_middle[0]), (255, 255, 255), 2)
     cv2.line(img, (self.up_right_corner[1], self.up_right_corner[0]), (self.bottom_right_corner[1], self.bottom_right_corner[0]), (255, 255, 255), 2)
 
+    cv2.line(img, (self.middle_left[1], self.middle_left[0]), (self.middle_right[1], self.middle_right[0]), (0, 0, 0), 3)
+
     cv2.circle(img, (self.up_service_middle[1],self.up_service_middle[0]), 5, (255, 0, 0), -1)
     cv2.circle(img, (self.bottom_service_middle[1],self.bottom_service_middle[0]), 5, (255, 0, 0), -1)
 
