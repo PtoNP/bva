@@ -37,6 +37,7 @@ def generate_hitmap(players_positions_path, hits_df, stroke_df):
     history = { 'player_A' : [], 'player_B': []}
     counter = 0
     player = server
+    hit_count = 0
     for hit in hits_df.iterrows():
         if player == 1:
             player_name = 'player_A'
@@ -46,8 +47,8 @@ def generate_hitmap(players_positions_path, hits_df, stroke_df):
         if hit[1]['hit'] == 1:
             position_x = players_positions.loc[counter][f'{player_name}_court_x']
             position_y = players_positions.loc[counter][f'{player_name}_court_y']
-            attack = stroke_df.loc[counter]['0']
-            defense = stroke_df.loc[counter]['1']
+            attack = stroke_df.loc[hit_count]['0']
+            defense = stroke_df.loc[hit_count]['1']
             if defense > attack:
                 stroke_color = (0,0,255)
             else:
@@ -55,6 +56,7 @@ def generate_hitmap(players_positions_path, hits_df, stroke_df):
 
             history[player_name].append([(position_x, position_y),stroke_color])
             player = -player
+            hit_count += 1
 
         img = bcc.drawCourt()
 
