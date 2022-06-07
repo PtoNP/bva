@@ -92,9 +92,7 @@ def mirror_data(df_url, vid_url, play_url):
     df = df.merge(video_details, on='video_path')
     play_details = pd.read_csv(play_url)
     df = df.merge(play_details, on=['video_path', 'frame'])
-    print(df.shape)
     mirror_df = df.copy()
-    print(mirror_df.shape)
 
     mirror_df['video_path'] = mirror_df.apply(lambda x: x.video_path[:-4]+"_mirr.mp4", axis=1)
     mirror_df['birdie_x'] = mirror_df.apply(lambda x: x.birdie_x - x.width, axis=1)
@@ -114,5 +112,4 @@ def mirror_data(df_url, vid_url, play_url):
         lambda x: -1 if x.player_B_img_x ==-1 else x.player_B_img_x - x.width, axis=1)
 
     full_df = pd.concat((df, mirror_df), ignore_index=True)
-    print(full_df.shape)
     return full_df
