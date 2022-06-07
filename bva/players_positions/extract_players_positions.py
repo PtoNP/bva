@@ -105,7 +105,7 @@ class ExtractPlayersPositions:
                 idx_box_B = self.bcc.closestPointToBottomT(centers_court)
                 center_B = centers_img[idx_box_B]
                 self.PlayerData_B.AddPosition(center_B)
-                ß#cv2.circle(img, (center_B[0],center_B[1]), 5, (255, 0, 0), -1)
+                #cv2.circle(img, (center_B[0],center_B[1]), 5, (255, 0, 0), -1)
                 del centers_court[idx_box_B]
                 del centers_img[idx_box_B]
 
