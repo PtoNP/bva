@@ -142,6 +142,7 @@ if tmp_path is not None:
         bva.run_tracknetv2()
         bva.run_players_detection()
         bva.run_hitnet()
+        bva.run_strokenet()
         bva.run_build_augmented_video()
 
         st.session_state['video_path'] = bva.video_input_path
