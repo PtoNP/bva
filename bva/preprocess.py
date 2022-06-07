@@ -45,6 +45,14 @@ def get_features(df_shots):
         lambda x: normalize_y(1, x.bl_corner_x, x.width), axis=1)
     df_shots['bl_corner_y_nrm'] = df_shots.apply(
         lambda x: normalize_y(1, x.bl_corner_y, x.height), axis=1)
+    df_shots['left_net_x_nrm'] = df_shots.apply(
+        lambda x: normalize_x(1, x.left_net_x, x.width), axis=1)
+    df_shots['left_net_y_nrm'] = df_shots.apply(
+        lambda x: normalize_y(1, x.left_net_y, x.width), axis=1)
+    df_shots['right_net_x_nrm'] = df_shots.apply(
+        lambda x: normalize_x(1, x.right_net_x, x.width), axis=1)
+    df_shots['right_net_y_nrm'] = df_shots.apply(
+        lambda x: normalize_y(1, x.right_net_y, x.width), axis=1)
     df_shots['player_A_court_x_nrm'] = df_shots.apply(
         lambda x: normalize_x(x.player_A_visible, x.player_A_court_x, court_width), axis=1)
     df_shots['player_A_court_y_nrm'] = df_shots.apply(

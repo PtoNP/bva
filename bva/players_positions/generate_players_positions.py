@@ -29,7 +29,7 @@ def generate_video_players_positions(video_file_path, details_csv_path):
         [details.iloc[0]['bl_corner_y'], details.iloc[0]['bl_corner_x']]
     )
 
-    epp.Run(every_n_frames=1)
+    epp.Run(every_n_frames=1, noVideoOut=True)
 
 def merge_video_players_positions(path_to_videos, out_path):
     frames = []
