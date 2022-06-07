@@ -1,7 +1,7 @@
 import pandas as pd
 from players_positions.court_context import CourtContext
 
-def generate_hitmap(players_positions_path, hits_df):
+def generate_hitmap(players_positions_path, hits_df, stroke_df):
 
     bcc = CourtContext()
     players_positions = pd.read_csv(players_positions_path)
@@ -46,16 +46,23 @@ def generate_hitmap(players_positions_path, hits_df):
         if hit[1]['hit'] == 1:
             position_x = players_positions.loc[counter][f'{player_name}_court_x']
             position_y = players_positions.loc[counter][f'{player_name}_court_y']
-            history[player_name].append((position_x, position_y))
+            attack = stroke_df.loc[counter][0]
+            defense = stroke_df.loc[counter][1]
+            if defense > attack:
+                stroke_color = (0,0,255)
+            else:
+                stroke_color = (255,0,0)
+
+            history[player_name].append([(position_x, position_y),stroke_color])
             player = -player
 
         img = bcc.drawCourt()
 
         for h in history['player_A']:
-            img = bcc.drawCourtPosition(img, h, color=(211,0,148),filled=True)
+            img = bcc.drawCourtPosition(img, h[0], h[1],filled=True)
 
         for h in history['player_B']:
-            img = bcc.drawCourtPosition(img, h, color=(0,165,255),filled=True)
+            img = bcc.drawCourtPosition(img, h[0], h[1],filled=True)
 
         pA_x = players_positions.loc[counter]['player_A_court_x']
         pA_y = players_positions.loc[counter]['player_A_court_y']
@@ -63,7 +70,7 @@ def generate_hitmap(players_positions_path, hits_df):
         pB_y = players_positions.loc[counter]['player_B_court_y']
 
         if counter < len(hits_df) -1:
-            img = bcc.drawCourtPosition(img, (pA_x,pA_y), color=(211,0,148), radius=20)
+            img = bcc.drawCourtPosition(img, (pA_x,pA_y), color=(0,165,255), radius=20)
             img = bcc.drawCourtPosition(img, (pB_x,pB_y), color=(0,165,255), radius=20)
 
         images.append(img)

@@ -32,7 +32,11 @@ class BvaMain:
         print('Players positions done')
 
     def run_hitnet(self):
-        y_pred = hitnet_predict_shots(self.predict_csv_path, self.video_details_path, self.players_csv_path, self.hitnet_model_path)
+        y_pred = hitnet_predict_shots(
+                        self.predict_csv_path,
+                        self.video_details_path,
+                        self.players_csv_path,
+                        self.hitnet_model_path)
         hit_probas_df = pd.DataFrame(y_pred)
         hit_probas_df.index.name = "index"
         hit_probas_df.to_csv(self.hitnet_probas_path)
@@ -40,12 +44,22 @@ class BvaMain:
 
     def run_strokenet(self):
          #hitnet_pred, predict_path, video_details_path, players_positions_path, mod_url
-        y_pred = predict_classes(self.hitnet_probas_path, self.predict_csv_path, self.video_details_path, self.players_csv_path, self.hitnet_model_path)
+        y_pred = predict_classes(
+                    self.hitnet_probas_path,
+                    self.predict_csv_path,
+                    self.video_details_path,
+                    self.players_csv_path,
+                    self.strokenet_model_path)
         stroke_probas_df = pd.DataFrame(y_pred)
         stroke_probas_df.index.name = "index"
         stroke_probas_df.to_csv(self.strokenet_probas_path)
         print('StrokeNet done')
 
     def run_build_augmented_video(self):
-        generate(self.video_input_path, self.predict_csv_path, self.players_csv_path, self.hitnet_probas_path, self.output_path)
+        generate(self.video_input_path,
+                    self.predict_csv_path,
+                    self.players_csv_path,
+                    self.hitnet_probas_path,
+                    self.strokenet_probas_path,
+                    self.output_path)
         print('Build Final Video done')

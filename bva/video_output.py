@@ -82,13 +82,17 @@ def generate(   input_video_path,
                 birdie_csv_path,
                 players_positions_path,
                 hitnet_predict_path,
+                strokenet_predict_path,
                 output_path):
     cap = cv2.VideoCapture(input_video_path)
     birdie_positions = pd.read_csv(birdie_csv_path)
 
     hits_df = find_final_predict_from_hitnet(hitnet_predict_path,
                                     params.FINAL_PREDICT_PROBA_THRESHOLD)
-    hitmaps = generate_hitmap(players_positions_path, hits_df)
+
+    stroke_df = pd.read_csv(strokenet_predict_path)
+
+    hitmaps = generate_hitmap(players_positions_path, hits_df, stroke_df)
 
     success, image = cap.read()
     canvas, scene, hitmap = prepare_canvas(0,image, hitmaps[0], hits_df.iloc[0]['hit'])
