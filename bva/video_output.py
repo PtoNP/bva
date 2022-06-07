@@ -69,6 +69,12 @@ def prepare_canvas(frame_count, frame, hitmap, is_hit=False, with_frames_info=Fa
             canvas = cv2.putText(canvas, 'HIT', (scene.shape[1]-infos_width+20, 70),
                      cv2.FONT_HERSHEY_SIMPLEX,1, (0, 0, 255), 2, cv2.LINE_AA)
 
+        canvas = cv2.putText(canvas, 'ATT', (scene.shape[1]-infos_width+20, 100),
+                    cv2.FONT_HERSHEY_SIMPLEX,0.7, (255, 0, 0), 2, cv2.LINE_AA)
+
+        canvas = cv2.putText(canvas, 'DEF', (scene.shape[1]-infos_width+20, 130),
+                    cv2.FONT_HERSHEY_SIMPLEX,0.7, (0, 0, 255), 2, cv2.LINE_AA)
+
     return canvas, scene, hitmap
 
 def apply_ratio(original_image, resized_image, birdie_xy):
