@@ -20,7 +20,8 @@ def hitnet_get_data():
     X, y, test_dict = get_sequences_by_video(
                                         f'{cur_dir}/data/clean_dataset.csv',
                                         f'{cur_dir}/data/video_details.csv',
-                                        f'{cur_dir}/data/players_positions.csv')
+                                        f'{cur_dir}/data/players_positions.csv',
+                                        True)
     return X, y, test_dict
 
 #RNN model creation
