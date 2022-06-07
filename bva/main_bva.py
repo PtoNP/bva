@@ -13,7 +13,7 @@ class BvaMain:
         self.video_details_path = f"{tmp_path}/video_details_input.csv"
         self.predict_csv_path = f"{tmp_path}/match_video_input_predict.csv"
         self.players_csv_path = f"{tmp_path}/match_video_input_players.csv"
-        self.hitnet_model_path = "/bva/models/hitnet_mirror"
+        self.hitnet_model_path = f"/bva/models/{params.HITNET_MODEL}"
         self.hitnet_probas_path = f"{tmp_path}/hitnet_probas.csv"
         self.output_path = f"{tmp_path}/match_video_output.mp4"
         self.strokenet_model_path = "/bva/models/2class"
