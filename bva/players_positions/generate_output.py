@@ -45,8 +45,18 @@ def generate_hitmap(players_positions_path, hits_df, stroke_df):
             player_name = 'player_B'
 
         if hit[1]['hit'] == 1:
-            position_x = players_positions.loc[counter][f'{player_name}_court_x']
-            position_y = players_positions.loc[counter][f'{player_name}_court_y']
+            pos_counter = 0
+            position_x = -1
+            while position_x == -1:
+                position_x = players_positions.loc[counter+pos_counter][f'{player_name}_court_x']
+                position_y = players_positions.loc[counter+pos_counter][f'{player_name}_court_y']
+                pos_counter +=1
+
+            if counter > 112 and counter < 120:
+                print(counter)
+                print(position_x)
+                print(position_y)
+
             attack = stroke_df.loc[hit_count]['0']
             defense = stroke_df.loc[hit_count]['1']
             if defense > attack:
