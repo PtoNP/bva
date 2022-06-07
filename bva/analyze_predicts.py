@@ -22,6 +22,7 @@ def find_final_predict_from_hitnet(hitnet_predict_path, proba_threshold):
     end_idx = -1
     hit_idxs = []
     wait_frames = 0
+    count_hit_frames = 0
     # for all probas
     for i in range(len(df)):
         if wait_frames > 0:
@@ -37,12 +38,16 @@ def find_final_predict_from_hitnet(hitnet_predict_path, proba_threshold):
                 else:
                     start_idx = i
                     end_idx = i
+                    count_hit_frames = 0
+
+                count_hit_frames += 1
             else:
                 if start_idx > 0:
-                    hit_idxs.append(int(start_idx + (end_idx - start_idx)/2))
+                    if count_hit_frames >= params.MIN_FRAMES_FOR_HIT:
+                        hit_idxs.append(int(start_idx + (end_idx - start_idx)/2))
+                        wait_frames = params.FINAL_PREDICT_MIN_FRAMES_BEFORE_NEXT_HIT
                     start_idx = -1
                     end_idx = -1
-                    wait_frames = params.FINAL_PREDICT_MIN_FRAMES_BEFORE_NEXT_HIT
 
     df['hit'] = df.apply(lambda x: set_final_hit(x['frame'], hit_idxs), axis=1)
 
