@@ -219,6 +219,27 @@ def get_X_from_tracknet_output(predict_path, video_details_path,
 
     return X
 
+def remove_weak_sequences(sequences, targets):
+    idx_to_remove = []
+    counter_sequences = 0
+    idx = 0
+    for s, t in zip(sequences,targets):
+        counter_invisibles = 0
+        for f in s:
+            if f[0] == 0:
+                counter_invisibles += 1
+
+        if counter_invisibles > 8:
+            counter_sequences += 1
+            idx_to_remove.append(idx)
+
+        idx += 1
+
+    sequences = np.delete(sequences, idx_to_remove, axis=0)
+    targets = np.delete(targets, idx_to_remove, axis=0)
+    return sequences, targets
+
+
 if __name__ == "__main__":
     cur_dir = os.path.dirname(os.path.realpath(__file__))
     all_videos_sequences, all_videos_targets, test_dict = get_sequences_by_video(

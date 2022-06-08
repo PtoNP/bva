@@ -22,6 +22,8 @@ def hitnet_get_data():
                                         f'{cur_dir}/data/video_details.csv',
                                         f'{cur_dir}/data/players_positions.csv',
                                         True)
+    X, y = remove_weak_sequences(X,y)
+
     return X, y, test_dict
 
 #RNN model creation
