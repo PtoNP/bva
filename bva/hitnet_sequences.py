@@ -94,7 +94,7 @@ def get_video_sequences(video_frames):
     return np.array(sequences), np.array(targets)
 
 def get_sequences_by_video(df_url, vid_url, play_url, model_name):
-    mirror = model_name.contains('mirr')
+    mirror = 'mirr' in model_name
     #no data mirroring
     if not mirror:
         df = pd.read_csv(df_url)
