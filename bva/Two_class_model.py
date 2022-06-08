@@ -35,7 +35,7 @@ def process_features_target(y):
 # 2class model creation
 def classif_model():
     model = Sequential()
-    model.add(layers.Masking(mask_value=-1000, input_shape=(50,21)))
+    model.add(layers.Masking(mask_value=-1000, input_shape=(50,25)))
     model.add(layers.GRU(units=64, activation='tanh', return_sequences=True))
     model.add(layers.GRU(units=32, activation='tanh', return_sequences=True))
     model.add(layers.GRU(units=24, activation='tanh', return_sequences=False))
