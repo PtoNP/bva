@@ -140,6 +140,11 @@ if tmp_path is not None:
     hitnet_model_name = st.selectbox('Hitnet Model :',
         ('hitnet', 'hitnet_mirror', 'hitnet2', 'hitnet_mirror2'))
 
+    params.FINAL_PREDICT_PROBA_THRESHOLD = st.slider('Hitnet predict threshold', 0.5, 1, 0.95, 0.01)
+    params.FINAL_PREDICT_MIN_FRAMES_BEFORE_NEXT_HIT = st.slider('Hitnet min frames between hit', 5, 20, 10, 1)
+    params.MIN_FRAMES_FOR_HIT = st.slider('Hitnet min hit frames', 1, 5, 2, 1)
+
+
     if st.button('Start video augmentation'):
         bva = BvaMain(tmp_path, hitnet_model_name)
         bva.run_tracknetv2()
