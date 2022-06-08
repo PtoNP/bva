@@ -1,4 +1,5 @@
 import os
+import sys
 import pandas as pd
 import numpy as np
 import params
@@ -15,13 +16,13 @@ from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.optimizers import RMSprop
 
 #get all sequences to train the model, return X, y to be trained + dict for testing
-def hitnet_get_data():
+def hitnet_get_data(model_name):
     cur_dir = os.path.dirname(os.path.realpath(__file__))
     X, y, test_dict = get_sequences_by_video(
                                         f'{cur_dir}/data/clean_dataset.csv',
                                         f'{cur_dir}/data/video_details.csv',
                                         f'{cur_dir}/data/players_positions.csv',
-                                        params.TRAIN_HITNET_WITH_MIRRORING)
+                                        model_name)
     X, y = remove_weak_sequences(X,y)
 
     return X, y, test_dict
@@ -49,8 +50,8 @@ def hitnet_fitting(model, X_train, y_train, X_val, y_val):
     return model, history
 
 # Hitnet RNN training
-def hitnet_training(filename='/bva/models/hitnet'):
-    X, y, test_dict = hitnet_get_data()
+def hitnet_training(model_name):
+    X, y, test_dict = hitnet_get_data(model_name)
     y_cat = to_categorical(y)
     X_train, X_val, y_train, y_val = train_test_split(X, y_cat, test_size=0.2)
     model = hitnet_model()
@@ -70,5 +71,6 @@ def hitnet_predict_shots(predict_path, video_details_path, players_positions_pat
 
 
 if __name__ == "__main__":
-    hitnet_training()
+    model_name = sys.argv[1]
+    hitnet_training(f'/bva/models/{model_name}')
     print("Hitnet training done")

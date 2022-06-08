@@ -7,13 +7,13 @@ from video_output import generate
 import params
 
 class BvaMain:
-    def __init__(self, tmp_path):
+    def __init__(self, tmp_path, hitnet_model_name):
         self.tmp_path = tmp_path
         self.video_input_path =  f"{tmp_path}/match_video_input.mp4"
         self.video_details_path = f"{tmp_path}/video_details_input.csv"
         self.predict_csv_path = f"{tmp_path}/match_video_input_predict.csv"
         self.players_csv_path = f"{tmp_path}/match_video_input_players.csv"
-        self.hitnet_model_path = f"/bva/models/{params.HITNET_MODEL}"
+        self.hitnet_model_path = f"/bva/models/{hitnet_model_name}"
         self.hitnet_probas_path = f"{tmp_path}/hitnet_probas.csv"
         self.output_path = f"{tmp_path}/match_video_output.mp4"
         self.strokenet_model_path = "/bva/models/2class"
@@ -36,7 +36,8 @@ class BvaMain:
                         self.predict_csv_path,
                         self.video_details_path,
                         self.players_csv_path,
-                        self.hitnet_model_path)
+                        self.hitnet_model_path,
+                         self.hitnet_model_path)
         hit_probas_df = pd.DataFrame(y_pred)
         hit_probas_df.index.name = "index"
         hit_probas_df.to_csv(self.hitnet_probas_path)
