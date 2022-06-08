@@ -185,6 +185,14 @@ def get_X_from_tracknet_output(predict_path, video_details_path,
     video_birdie_positions['video_path'] = video_path
     video_birdie_positions['stroke'] = 'none'
 
+    # find tracknet errors index
+    not_zeros = video_birdie_positions[video_birdie_positions['Y'] > 0].copy()
+    not_zeros["diff_prev_y"] = abs(not_zeros["Y"] - (not_zeros["Y"].shift(1)))
+    not_zeros["diff_next_y"] = abs(not_zeros["Y"] - (not_zeros["Y"].shift(-1)))
+    errors = not_zeros[(not_zeros["Visibility"] == 1) & (not_zeros["diff_prev_y"] > params.TRACKNET_ERROR_THRESHOLD) & (not_zeros["diff_next_y"] > params.TRACKNET_ERROR_THRESHOLD)]
+    index_error = errors['Frame'].unique()
+    video_birdie_positions.loc[index_error,'Visibility'] = 0
+
     players_details = pd.read_csv(players_positions_path)
     players_details["video_path"] = video_path
 
