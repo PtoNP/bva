@@ -36,8 +36,7 @@ class BvaMain:
                         self.predict_csv_path,
                         self.video_details_path,
                         self.players_csv_path,
-                        self.hitnet_model_path,
-                         self.hitnet_model_path)
+                        self.hitnet_model_path)
         hit_probas_df = pd.DataFrame(y_pred)
         hit_probas_df.index.name = "index"
         hit_probas_df.to_csv(self.hitnet_probas_path)
