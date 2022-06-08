@@ -56,7 +56,7 @@ def hitnet_training(model_name):
     X_train, X_val, y_train, y_val = train_test_split(X, y_cat, test_size=0.2)
     model = hitnet_model()
     model, history = hitnet_fitting(model, X_train, y_train, X_val, y_val)
-    save_model(model, filename)
+    save_model(model, model_name)
     return model, history, test_dict
 
 
