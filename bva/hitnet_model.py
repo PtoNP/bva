@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 import params
-from hitnet_sequences import get_sequences_by_video, get_X_from_tracknet_output
+from hitnet_sequences import get_sequences_by_video, get_X_from_tracknet_output, remove_weak_sequences
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import tensorflow as tf
 import matplotlib.pyplot as plt
