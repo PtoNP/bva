@@ -21,7 +21,7 @@ def hitnet_get_data():
                                         f'{cur_dir}/data/clean_dataset.csv',
                                         f'{cur_dir}/data/video_details.csv',
                                         f'{cur_dir}/data/players_positions.csv',
-                                        True)
+                                        params.TRAIN_HITNET_WITH_MIRRORING)
     X, y = remove_weak_sequences(X,y)
 
     return X, y, test_dict
