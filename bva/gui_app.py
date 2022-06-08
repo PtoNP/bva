@@ -137,9 +137,8 @@ if tmp_path is not None:
 
         video_detail_input.to_csv(df_path)
 
-    hitnet_model_name = st.selectbox(
-...     'Hitnet Model ?',
-...     ('hitnet', 'hitnet_mirror', 'hitnet2', 'hitnet_mirror2'))
+    hitnet_model_name = st.selectbox('Hitnet Model :',
+        ('hitnet', 'hitnet_mirror', 'hitnet2', 'hitnet_mirror2'))
 
     if st.button('Start video augmentation'):
         bva = BvaMain(tmp_path, hitnet_model_name)
