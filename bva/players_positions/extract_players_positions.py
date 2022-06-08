@@ -97,28 +97,26 @@ class ExtractPlayersPositions:
             if(len(centers_court) >= 2):
                 idx_box_A = self.bcc.closestPointToTopT(centers_court)
                 center_A = centers_img[idx_box_A]
-
-                #cv2.circle(img, (center_A[0],center_A[1]), 5, (255, 0, 0), -1)
+                if   center_A[1] >= self.bcc.up_left_corner[0] \
+                 and center_A[1] <= self.bcc.middle_left[0]:
+                    self.PlayerData_A.AddPosition(center_A)
+                else:
+                    self.PlayerData_A.AddPosition(None)
                 del centers_court[idx_box_A]
                 del centers_img[idx_box_A]
 
                 idx_box_B = self.bcc.closestPointToBottomT(centers_court)
                 center_B = centers_img[idx_box_B]
-
-                #cv2.circle(img, (center_B[0],center_B[1]), 5, (255, 0, 0), -1)
+                if   center_B[1] >= self.bcc.middle_left[0] \
+                 and center_B[1] <= self.bcc.bottom_left_corner[0]:
+                    self.PlayerData_B.AddPosition(center_B)
+                else:
+                    self.PlayerData_B.AddPosition(None)
                 del centers_court[idx_box_B]
                 del centers_img[idx_box_B]
 
-
-                #2 players in two opposite half !!
-                if   center_A[1] >= self.bcc.up_left_corner[0] \
-                 and center_A[1] <= self.bcc.middle_left[0] \
-                 and center_B[1] >= self.bcc.middle_left[0] \
-                 and center_B[1] <= self.bcc.bottom_left_corner[0]:
-                    self.PlayerData_A.AddPosition(center_A)
-                    self.PlayerData_B.AddPosition(center_B)
-                    img_court = self.bcc.drawImagePositionOnCourt(img_court, center_A)
-                    img_court = self.bcc.drawImagePositionOnCourt(img_court, center_B)
+                img_court = self.bcc.drawImagePositionOnCourt(img_court, center_A)
+                img_court = self.bcc.drawImagePositionOnCourt(img_court, center_B)
 
             else:
                 self.PlayerData_A.AddPosition(None)
