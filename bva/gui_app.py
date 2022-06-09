@@ -161,8 +161,8 @@ if tmp_path is not None:
         params.REMOVE_DIRTY_SEQUENCES_AFTER_PREDICTION = st.checkbox('Remove dirty sequences after predict')
 
     with st.expander('Strokenet Parameters'):
-        strokenet_values = {'2class' : 'Strokenet without net features',
-                            '2class_nets': 'Strokenet with net features'}
+        strokenet_values = {'2class' : 'Strokenet',
+                            '2class_nets': 'Strokenet + net features'}
         strokenet_model_name = st.selectbox('Strokenet Model :',
             list(strokenet_values.keys()), format_func= lambda x : strokenet_values[x])
 

@@ -73,6 +73,4 @@ docker run -it --gpus all -p 80:8080 -e TF_FORCE_GPU_ALLOW_GROWTH=true \
 # inside docker container
 cp -r github_bva/bva/* bva
 cp TrackNetv2/predict3.py TrackNetv2/3_in_3_out/predict3.py
-
-# start streamlit
 streamlit run --server.port 8080 --browser.serverAddress 0.0.0.0 --server.enableCORS False --server.enableXsrfProtection False bva/gui_app.py
