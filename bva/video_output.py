@@ -123,7 +123,8 @@ def generate(   input_video_path,
             birdie = apply_ratio(image, scene, birdie)
             if len(birdie_history) > 4:
                 birdie_history = birdie_history[-3:0]
-            birdie_history.append(birdie)
+            if birdie['Visibility'] == 1:
+                birdie_history.append(birdie)
 
         canvas, scene, hitmap = prepare_canvas(count, image, hitmaps[count],
                                     hits_df.iloc[count]['hit'], params.SHOW_INFO)
