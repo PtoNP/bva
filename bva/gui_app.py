@@ -159,6 +159,10 @@ if tmp_path is not None:
                     1, 5, params.MIN_FRAMES_FOR_HIT, 1)
 
     if st.button('Start video augmentation'):
+        print(f'FINAL_PREDICT_PROBA_THRESHOLD : {params.FINAL_PREDICT_PROBA_THRESHOLD}')
+        print(f'FINAL_PREDICT_MIN_FRAMES_BEFORE_NEXT_HIT : {params.FINAL_PREDICT_MIN_FRAMES_BEFORE_NEXT_HIT}')
+        print(f'MIN_FRAMES_FOR_HIT : {params.MIN_FRAMES_FOR_HIT}')
+
         bva = BvaMain(tmp_path, hitnet_model_name)
         bva.run_tracknetv2()
         bva.run_players_detection()
