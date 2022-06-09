@@ -56,7 +56,7 @@ def prepare_canvas(frame_count, frame, hitmap, is_hit=False, with_frames_info=Fa
     if with_frames_info:
         infos_width = 100
         infos_height = 175
-        infos = np.zeros((infos_width, infos_height,3), np.uint8)
+        infos = np.zeros((infos_height, infos_width,3), np.uint8)
         canvas[
             0:infos_height, \
             scene.shape[1]-infos_width:scene.shape[1] \
