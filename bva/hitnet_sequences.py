@@ -93,7 +93,8 @@ def get_video_sequences(video_frames):
 
     return np.array(sequences), np.array(targets)
 
-def get_sequences_by_video(df_url, vid_url, play_url, mirror=False):
+def get_sequences_by_video(df_url, vid_url, play_url, model_name):
+    mirror = 'mirr' in model_name
     #no data mirroring
     if not mirror:
         df = pd.read_csv(df_url)
@@ -185,6 +186,15 @@ def get_X_from_tracknet_output(predict_path, video_details_path,
     video_birdie_positions['video_path'] = video_path
     video_birdie_positions['stroke'] = 'none'
 
+    # find tracknet errors index
+    not_zeros = video_birdie_positions[video_birdie_positions['Y'] > 0].copy()
+    not_zeros["diff_prev_y"] = abs(not_zeros["Y"] - (not_zeros["Y"].shift(1)))
+    not_zeros["diff_next_y"] = abs(not_zeros["Y"] - (not_zeros["Y"].shift(-1)))
+    errors = not_zeros[(not_zeros["Visibility"] == 1) & (not_zeros["diff_prev_y"] > params.TRACKNET_ERROR_THRESHOLD) & (not_zeros["diff_next_y"] > params.TRACKNET_ERROR_THRESHOLD)]
+    index_error = errors['Frame'].unique()
+    # set birdie not visible when strange value
+    video_birdie_positions.loc[index_error,'Visibility'] = 0
+
     players_details = pd.read_csv(players_positions_path)
     players_details["video_path"] = video_path
 
@@ -210,6 +220,27 @@ def get_X_from_tracknet_output(predict_path, video_details_path,
     X = get_video_sequences_for_predict(all_video_frames, nb_frames_per_window)
 
     return X
+
+def remove_weak_sequences(sequences, targets):
+    idx_to_remove = []
+    counter_sequences = 0
+    idx = 0
+    for s, t in zip(sequences,targets):
+        counter_invisibles = 0
+        for f in s:
+            if f[0] == 0:
+                counter_invisibles += 1
+
+        if counter_invisibles > 8:
+            counter_sequences += 1
+            idx_to_remove.append(idx)
+
+        idx += 1
+
+    sequences = np.delete(sequences, idx_to_remove, axis=0)
+    targets = np.delete(targets, idx_to_remove, axis=0)
+    return sequences, targets
+
 
 if __name__ == "__main__":
     cur_dir = os.path.dirname(os.path.realpath(__file__))

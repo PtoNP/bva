@@ -7,13 +7,13 @@ from video_output import generate
 import params
 
 class BvaMain:
-    def __init__(self, tmp_path):
+    def __init__(self, tmp_path, hitnet_model_name):
         self.tmp_path = tmp_path
         self.video_input_path =  f"{tmp_path}/match_video_input.mp4"
         self.video_details_path = f"{tmp_path}/video_details_input.csv"
         self.predict_csv_path = f"{tmp_path}/match_video_input_predict.csv"
         self.players_csv_path = f"{tmp_path}/match_video_input_players.csv"
-        self.hitnet_model_path = f"/bva/models/{params.HITNET_MODEL}"
+        self.hitnet_model_path = f"/bva/models/{hitnet_model_name}"
         self.hitnet_probas_path = f"{tmp_path}/hitnet_probas.csv"
         self.output_path = f"{tmp_path}/match_video_output.mp4"
         self.strokenet_model_path = "/bva/models/2class"
@@ -31,12 +31,27 @@ class BvaMain:
         generate_video_players_positions(self.video_input_path, self.video_details_path)
         print('Players positions done')
 
-    def run_hitnet(self):
-        y_pred = hitnet_predict_shots(
+    def run_hitnet(self, remove_dirty_sequences_after_prediction=False):
+        X_pred, y_pred = hitnet_predict_shots(
                         self.predict_csv_path,
                         self.video_details_path,
                         self.players_csv_path,
                         self.hitnet_model_path)
+
+        #if sequences has too much invisible birdie, consider no_hit
+        if remove_dirty_sequences_after_prediction:
+            idx = 0
+            for x,y in zip(X_pred, y_pred):
+                counter_invisibles = 0
+                for f in x:
+                    if f[0] == 0:
+                        counter_invisibles += 1
+
+                if counter_invisibles > 8:
+                    y_pred[0] = 0
+                    y_pred[0] = 0
+            idx += 1
+
         hit_probas_df = pd.DataFrame(y_pred)
         hit_probas_df.index.name = "index"
         hit_probas_df.to_csv(self.hitnet_probas_path)

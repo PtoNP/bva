@@ -1,8 +1,9 @@
 import os
+import sys
 import pandas as pd
 import numpy as np
 import params
-from hitnet_sequences import get_sequences_by_video, get_X_from_tracknet_output
+from hitnet_sequences import get_sequences_by_video, get_X_from_tracknet_output, remove_weak_sequences
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import tensorflow as tf
 import matplotlib.pyplot as plt
@@ -15,13 +16,15 @@ from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.optimizers import RMSprop
 
 #get all sequences to train the model, return X, y to be trained + dict for testing
-def hitnet_get_data():
+def hitnet_get_data(model_name):
     cur_dir = os.path.dirname(os.path.realpath(__file__))
     X, y, test_dict = get_sequences_by_video(
                                         f'{cur_dir}/data/clean_dataset.csv',
                                         f'{cur_dir}/data/video_details.csv',
                                         f'{cur_dir}/data/players_positions.csv',
-                                        True)
+                                        model_name)
+    X, y = remove_weak_sequences(X,y)
+
     return X, y, test_dict
 
 #RNN model creation
@@ -47,13 +50,13 @@ def hitnet_fitting(model, X_train, y_train, X_val, y_val):
     return model, history
 
 # Hitnet RNN training
-def hitnet_training(filename='/bva/models/hitnet'):
-    X, y, test_dict = hitnet_get_data()
+def hitnet_training(model_name):
+    X, y, test_dict = hitnet_get_data(model_name)
     y_cat = to_categorical(y)
     X_train, X_val, y_train, y_val = train_test_split(X, y_cat, test_size=0.2)
     model = hitnet_model()
     model, history = hitnet_fitting(model, X_train, y_train, X_val, y_val)
-    save_model(model, filename)
+    save_model(model, model_name)
     return model, history, test_dict
 
 
@@ -64,9 +67,10 @@ def hitnet_predict_shots(predict_path, video_details_path, players_positions_pat
     model = load_model(mod_url)
     y_pred = model.predict(X_test)
 
-    return y_pred
+    return X_test, y_pred
 
 
 if __name__ == "__main__":
-    hitnet_training()
+    model_name = sys.argv[1]
+    hitnet_training(f'/bva/models/{model_name}')
     print("Hitnet training done")

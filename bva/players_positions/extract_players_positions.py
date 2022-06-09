@@ -44,8 +44,8 @@ class ExtractPlayersPositions:
     height = original.get(cv2.CAP_PROP_FRAME_HEIGHT )
 
     if noVideoOut == False:
-      out = cv2.VideoWriter(f"{self.video_path[:-4]}_positions.mp4", cv2.VideoWriter_fourcc(*'MP4V'), self.fps, (int(width),int(height)))
-      out_court = cv2.VideoWriter(f"{self.video_path[:-4]}_tracker.mp4", cv2.VideoWriter_fourcc(*'MP4V'), self.fps, (int(610),int(1340)))
+      out = cv2.VideoWriter(f"{self.video_path[:-4]}_positions.mp4", cv2.VideoWriter_fourcc(*'mp4v'), self.fps, (int(width),int(height)))
+      out_court = cv2.VideoWriter(f"{self.video_path[:-4]}_tracker.mp4", cv2.VideoWriter_fourcc(*'mp4v'), self.fps, (int(610),int(1340)))
       #out_court = []
 
     odapi = DetectorAPI()
@@ -57,9 +57,7 @@ class ExtractPlayersPositions:
     sequence_frame_counter = 0
 
     while has_next == True and (endTime == None or int(frame_counter/self.fps) < endTime):
-      #print(frame_counter)
       if int(frame_counter/self.fps) >= startTime:
-
         img_court = self.bcc.drawCourt()
 
         img_court = self.bcc.drawImagePositionOnCourt(img_court, self.corners[0])
@@ -87,35 +85,41 @@ class ExtractPlayersPositions:
                     if box[3]-box[1] < 150:
                         player_center_img = [box[2], int(box[1] + (box[3]-box[1]) / 2)]
                         player_center_court = self.bcc.getCourtPointFromImagePoint(player_center_img)
-                        # if i == 0 or i == 1:
-                            # breakpoint()
+
                         if self.bcc.positionInCourt(player_center_court):
                             img = cv2.rectangle(img, (box[1], box[0]), (box[3], box[2]), (255, 0, 0), 2)  # cv2.FILLED
                             centers_img.append(player_center_img)
                             centers_court.append(player_center_court)
 
             if(len(centers_court) >= 2):
+                add_A = False
+                add_B = False
                 idx_box_A = self.bcc.closestPointToTopT(centers_court)
                 center_A = centers_img[idx_box_A]
-                self.PlayerData_A.AddPosition(center_A)
-                #cv2.circle(img, (center_A[0],center_A[1]), 5, (255, 0, 0), -1)
+                add_A = centers_court[idx_box_A][0] >= self.bcc.up_left_corner[0] \
+                    and centers_court[idx_box_A][0] <= self.bcc.middle_left[0]
                 del centers_court[idx_box_A]
                 del centers_img[idx_box_A]
 
                 idx_box_B = self.bcc.closestPointToBottomT(centers_court)
                 center_B = centers_img[idx_box_B]
-                self.PlayerData_B.AddPosition(center_B)
-                #cv2.circle(img, (center_B[0],center_B[1]), 5, (255, 0, 0), -1)
+
+                add_B = centers_court[idx_box_B][0] >= self.bcc.middle_left[0] \
+                    and centers_court[idx_box_B][0] <= self.bcc.bottom_left_corner[0]
                 del centers_court[idx_box_B]
                 del centers_img[idx_box_B]
 
-                #breakpoint()
+                if add_A and add_B:
+                    self.PlayerData_A.AddPosition(center_A)
+                    self.PlayerData_B.AddPosition(center_B)
+                else:
+                    self.PlayerData_A.AddPosition(None)
+                    self.PlayerData_B.AddPosition(None)
+
 
                 img_court = self.bcc.drawImagePositionOnCourt(img_court, center_A)
                 img_court = self.bcc.drawImagePositionOnCourt(img_court, center_B)
 
-                #img = cv2.circle(img, (center_A[0],center_A[1]), 10, (255, 0, 0), 2)
-                #img = cv2.circle(img, (center_B[0],center_B[1]), 10, (255, 0, 0), 2)
             else:
                 self.PlayerData_A.AddPosition(None)
                 self.PlayerData_B.AddPosition(None)
@@ -200,4 +204,4 @@ if __name__ == '__main__':
         [details.iloc[0]['bl_corner_y'], details.iloc[0]['bl_corner_x']]
     )
 
-    epp.Run(every_n_frames=1)
+    epp.Run(every_n_frames=1, endTime=1)

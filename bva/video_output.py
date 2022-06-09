@@ -55,8 +55,8 @@ def prepare_canvas(frame_count, frame, hitmap, is_hit=False, with_frames_info=Fa
     # create info box
     if with_frames_info:
         infos_width = 100
-        infos_height = 100
-        infos = np.zeros((infos_width, infos_height,3), np.uint8)
+        infos_height = 175
+        infos = np.zeros((infos_height, infos_width,3), np.uint8)
         canvas[
             0:infos_height, \
             scene.shape[1]-infos_width:scene.shape[1] \
@@ -120,16 +120,19 @@ def generate(   input_video_path,
     while success and count < len(hitmaps):
         if count < len(birdie_positions):
             birdie = birdie_positions.loc[count]
+            birdie_visible = birdie['Visibility']
             birdie = apply_ratio(image, scene, birdie)
             if len(birdie_history) > 4:
                 birdie_history = birdie_history[-3:0]
-            birdie_history.append(birdie)
+
+            if birdie_visible:
+                birdie_history.append(birdie)
 
         canvas, scene, hitmap = prepare_canvas(count, image, hitmaps[count],
                                     hits_df.iloc[count]['hit'], params.SHOW_INFO)
 
         for h in birdie_history:
-            cv2.circle(canvas, h, 5, (0,0,255), -1)
+            cv2.circle(canvas, h, 5, (0,255,255), -1)
 
         out.write(canvas)
 

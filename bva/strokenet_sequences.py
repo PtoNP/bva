@@ -96,8 +96,6 @@ def get_all_videos_sequences(clean_dataset_path, video_details_path, players_pat
         else:
             # add to results
             if len(all_videos_sequences) > 0:
-                #print(all_videos_sequences.shape)
-                #print(X.shape)
                 all_videos_sequences = np.vstack((all_videos_sequences, X))
                 all_videos_targets = np.concatenate([all_videos_targets, y])
             else:

@@ -32,6 +32,9 @@ class CourtContext:
     self.bottom_serve_even = [1070,340]
     self.bottom_serve_odd  = [1070,270]
 
+    self.up_center = [335,305]
+    self.bottom_center = [1005,305]
+
   def setHomographyFromCorners(self, img_points):
     # img_points = [top_left_corner[y,x], top_right_corner[y,x], bottom_right_corner[y,x], bottom_left_corner[y,x]]
     pts_src = np.array(
@@ -85,10 +88,11 @@ class CourtContext:
       and  p[0] <= self.bottom_left_corner[0]
 
   def closestPointToTopT(self, pts):
-    return self.closestNode(self.up_service_middle, pts)
+    #return self.closestNode(self.up_service_middle, pts)
+    return self.closestNode(self.up_center, pts)
 
   def closestPointToBottomT(self, pts):
-    return self.closestNode(self.bottom_service_middle, pts)
+    return self.closestNode(self.bottom_center, pts)
 
   def drawCourt(self):
     width = int(self.up_right_corner[1] - self.up_left_corner[1])
