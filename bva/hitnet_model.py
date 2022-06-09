@@ -67,7 +67,7 @@ def hitnet_predict_shots(predict_path, video_details_path, players_positions_pat
     model = load_model(mod_url)
     y_pred = model.predict(X_test)
 
-    return y_pred
+    return X_test, y_pred
 
 
 if __name__ == "__main__":

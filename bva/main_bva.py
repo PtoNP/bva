@@ -31,12 +31,27 @@ class BvaMain:
         generate_video_players_positions(self.video_input_path, self.video_details_path)
         print('Players positions done')
 
-    def run_hitnet(self):
-        y_pred = hitnet_predict_shots(
+    def run_hitnet(self, remove_dirty_sequences_after_prediction=False):
+        X_pred, y_pred = hitnet_predict_shots(
                         self.predict_csv_path,
                         self.video_details_path,
                         self.players_csv_path,
                         self.hitnet_model_path)
+
+        #if sequences has too much invisible birdie, consider no_hit
+        if remove_dirty_sequences_after_prediction:
+            idx = 0
+            for x,y in zip(X_pred, y_pred):
+                counter_invisibles = 0
+                for f in x:
+                    if f[0] == 0:
+                        counter_invisibles += 1
+
+                if counter_invisibles > 8:
+                    y_pred[0] = 0
+                    y_pred[0] = 0
+            idx += 1
+
         hit_probas_df = pd.DataFrame(y_pred)
         hit_probas_df.index.name = "index"
         hit_probas_df.to_csv(self.hitnet_probas_path)

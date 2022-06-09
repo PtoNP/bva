@@ -158,10 +158,13 @@ if tmp_path is not None:
                     'Hitnet min hit frames',
                     1, 5, params.MIN_FRAMES_FOR_HIT, 1)
 
+        params.REMOVE_DIRTY_SEQUENCES_AFTER_PREDICTION = st.checkbox('Remove dirty sequences after predict')
+
     if st.button('Start video augmentation'):
         print(f'FINAL_PREDICT_PROBA_THRESHOLD : {params.FINAL_PREDICT_PROBA_THRESHOLD}')
         print(f'FINAL_PREDICT_MIN_FRAMES_BEFORE_NEXT_HIT : {params.FINAL_PREDICT_MIN_FRAMES_BEFORE_NEXT_HIT}')
         print(f'MIN_FRAMES_FOR_HIT : {params.MIN_FRAMES_FOR_HIT}')
+        print(f'REMOVE_DIRTY_SEQUENCES_AFTER_PREDICTION : {params.REMOVE_DIRTY_SEQUENCES_AFTER_PREDICTION}')
 
         bva = BvaMain(tmp_path, hitnet_model_name)
         bva.run_tracknetv2()
