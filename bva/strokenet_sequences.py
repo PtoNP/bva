@@ -5,7 +5,7 @@ from preprocess import get_features, add_stroke_cat_to_dataset
 from analyze_predicts import find_final_predict_from_hitnet
 import params
 
-def get_video_sequences_by_hit(video_frames, for_predict=False):
+def get_video_sequences_by_hit(video_frames, for_predict=False, with_net_features=False):
     video_frames = video_frames.reset_index()
 
     if for_predict:
@@ -21,27 +21,54 @@ def get_video_sequences_by_hit(video_frames, for_predict=False):
     for idx, frame in video_frames.iterrows():
         target = frame.stroke_cat
 
-        features = [frame.birdie_visible,
-                    frame.birdie_x_nrm,
-                    frame.birdie_y_nrm,
-                    frame.ul_corner_x_nrm,
-                    frame.ul_corner_y_nrm,
-                    frame.ur_corner_x_nrm,
-                    frame.ur_corner_y_nrm,
-                    frame.br_corner_x_nrm,
-                    frame.br_corner_y_nrm,
-                    frame.bl_corner_x_nrm,
-                    frame.bl_corner_y_nrm,
-                    frame.player_A_visible,
-                    frame.player_B_visible,
-                    frame.player_A_court_x_nrm,
-                    frame.player_A_court_y_nrm,
-                    frame.player_B_court_x_nrm,
-                    frame.player_B_court_y_nrm,
-                    frame.player_A_img_x_nrm,
-                    frame.player_A_img_y_nrm,
-                    frame.player_B_img_x_nrm,
-                    frame.player_B_img_y_nrm]
+        if with_net_features:
+            features = [frame.birdie_visible,
+                        frame.birdie_x_nrm,
+                        frame.birdie_y_nrm,
+                        frame.ul_corner_x_nrm,
+                        frame.ul_corner_y_nrm,
+                        frame.ur_corner_x_nrm,
+                        frame.ur_corner_y_nrm,
+                        frame.br_corner_x_nrm,
+                        frame.br_corner_y_nrm,
+                        frame.bl_corner_x_nrm,
+                        frame.bl_corner_y_nrm,
+                        frame.left_net_x_nrm,
+                        frame.left_net_y_nrm,
+                        frame.right_net_x_nrm,
+                        frame.right_net_y_nrm,
+                        frame.player_A_visible,
+                        frame.player_B_visible,
+                        frame.player_A_court_x_nrm,
+                        frame.player_A_court_y_nrm,
+                        frame.player_B_court_x_nrm,
+                        frame.player_B_court_y_nrm,
+                        frame.player_A_img_x_nrm,
+                        frame.player_A_img_y_nrm,
+                        frame.player_B_img_x_nrm,
+                        frame.player_B_img_y_nrm]
+        else:
+            features = [frame.birdie_visible,
+                        frame.birdie_x_nrm,
+                        frame.birdie_y_nrm,
+                        frame.ul_corner_x_nrm,
+                        frame.ul_corner_y_nrm,
+                        frame.ur_corner_x_nrm,
+                        frame.ur_corner_y_nrm,
+                        frame.br_corner_x_nrm,
+                        frame.br_corner_y_nrm,
+                        frame.bl_corner_x_nrm,
+                        frame.bl_corner_y_nrm,
+                        frame.player_A_visible,
+                        frame.player_B_visible,
+                        frame.player_A_court_x_nrm,
+                        frame.player_A_court_y_nrm,
+                        frame.player_B_court_x_nrm,
+                        frame.player_B_court_y_nrm,
+                        frame.player_A_img_x_nrm,
+                        frame.player_A_img_y_nrm,
+                        frame.player_B_img_x_nrm,
+                        frame.player_B_img_y_nrm]
 
         if frame['birdie_hit'] == 1:
             if sequence_started:
@@ -71,7 +98,8 @@ def get_video_sequences_by_hit(video_frames, for_predict=False):
 
     return np.array(video_sequences), np.array(video_targets)
 
-def get_all_videos_sequences(clean_dataset_path, video_details_path, players_path, nb_videos_test):
+def get_all_videos_sequences(clean_dataset_path, video_details_path,
+                        players_path, nb_videos_test, with_net_features):
     clean_df = pd.read_csv(clean_dataset_path)
     clean_df = add_stroke_cat_to_dataset(clean_df)
 
@@ -89,7 +117,7 @@ def get_all_videos_sequences(clean_dataset_path, video_details_path, players_pat
     counter = 0
     for video in videos:
         all_video_frames = df_shots[df_shots["video_path"]==video]
-        X, y = get_video_sequences_by_hit(all_video_frames)
+        X, y = get_video_sequences_by_hit(all_video_frames, with_net_features)
 
         if counter > len(videos) - nb_videos_test - 1:
             test_dict[video] = (X,y)
@@ -110,7 +138,8 @@ def get_all_videos_sequences(clean_dataset_path, video_details_path, players_pat
 def get_X_from_hitnet_output(hitnet_csv_path,
                              tracknet_predict_path,
                              players_csv_path,
-                             video_details_path):
+                             video_details_path,
+                             with_net_features):
     filename = tracknet_predict_path.split('/')[-1].replace('.csv','.mp4')
     video_path = f'./input/{filename}'
 
@@ -152,7 +181,7 @@ def get_X_from_hitnet_output(hitnet_csv_path,
 
     all_video_frames = get_features(all_video_frames)
 
-    X, y = get_video_sequences_by_hit(all_video_frames,for_predict=True)
+    X, y = get_video_sequences_by_hit(all_video_frames,for_predict=True, with_net_features)
 
     return X
 

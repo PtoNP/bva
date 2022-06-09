@@ -7,7 +7,7 @@ from video_output import generate
 import params
 
 class BvaMain:
-    def __init__(self, tmp_path, hitnet_model_name):
+    def __init__(self, tmp_path, hitnet_model_name, strokenet_model_name):
         self.tmp_path = tmp_path
         self.video_input_path =  f"{tmp_path}/match_video_input.mp4"
         self.video_details_path = f"{tmp_path}/video_details_input.csv"
@@ -16,7 +16,7 @@ class BvaMain:
         self.hitnet_model_path = f"/bva/models/{hitnet_model_name}"
         self.hitnet_probas_path = f"{tmp_path}/hitnet_probas.csv"
         self.output_path = f"{tmp_path}/match_video_output.mp4"
-        self.strokenet_model_path = "/bva/models/2class"
+        self.strokenet_model_path = f"/bva/models/{strokenet_model_name}"
         self.strokenet_probas_path = f"{tmp_path}/strokenet_probas.csv"
 
         self.tracknet_predict_path = os.path.abspath("../../TrackNetv2/3_in_3_out/predict3.py")
