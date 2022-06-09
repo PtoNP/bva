@@ -187,11 +187,11 @@ if tmp_path is not None:
         video_to_show = st.session_state['output_path']
         if video_to_show:
             dl_values = {st.session_state['output_path'] : ['Result video', 'video_output.mp4'],
-                            st.session_state['video_details_path'] : ['Video details','video_details.csv'],
-                            st.session_state['predict_csv'] : ['Tracknet csv','tracknet_output.csv'],
-                            st.session_state['players_csv'] : ['Players csv','players_output.csv'],
-                            st.session_state['hit_probas_csv'] : ['Hitnet csv', 'hitnet_output.csv'],
-                            st.session_state['stroke_probas_csv'] : ['Strokenet csv','strokenet_output.csv']}
+                         st.session_state['video_details_path'] : ['Video details','video_details.csv'],
+                         st.session_state['predict_csv'] : ['Tracknet csv','tracknet_output.csv'],
+                         st.session_state['players_csv'] : ['Players csv','players_output.csv'],
+                         st.session_state['hit_probas_csv'] : ['Hitnet csv', 'hitnet_output.csv'],
+                         st.session_state['stroke_probas_csv'] : ['Strokenet csv','strokenet_output.csv']}
             dl_file = st.selectbox('File to download :',
                 list(dl_values.keys()), format_func= lambda x : dl_values[x][0])
 
