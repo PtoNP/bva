@@ -19,7 +19,7 @@ class BvaMain:
         self.strokenet_model_path = "/bva/models/2class"
         self.strokenet_probas_path = f"{tmp_path}/strokenet_probas.csv"
 
-        self.tracknet_predict_path = os.path.abspath("../../TrackNetv2/predict3.py")
+        self.tracknet_predict_path = os.path.abspath("../../TrackNetv2/3_in_3_out/predict3.py")
         self.tracknet_weight_path = os.path.abspath("../../TrackNetv2/3_in_3_out/model906_30")
 
     def run_tracknetv2(self):
