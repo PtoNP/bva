@@ -132,7 +132,7 @@ def generate(   input_video_path,
                                     hits_df.iloc[count]['hit'], params.SHOW_INFO)
 
         for h in birdie_history:
-            cv2.circle(canvas, h, 5, (0,0,255), -1)
+            cv2.circle(canvas, h, 5, (0,255,255), -1)
 
         out.write(canvas)
 
