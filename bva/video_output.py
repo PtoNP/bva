@@ -55,7 +55,7 @@ def prepare_canvas(frame_count, frame, hitmap, is_hit=False, with_frames_info=Fa
     # create info box
     if with_frames_info:
         infos_width = 100
-        infos_height = 100
+        infos_height = 175
         infos = np.zeros((infos_width, infos_height,3), np.uint8)
         canvas[
             0:infos_height, \
