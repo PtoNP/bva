@@ -137,24 +137,26 @@ if tmp_path is not None:
 
         video_detail_input.to_csv(df_path)
 
-    hitnet_values = {'hitnet' : 'Hitnet 1 (no tracknet/sequence cleaning)',
-                     'hitnet_mirror': 'Hitnet 1 + data mirroring',
-                     'hitnet2': 'Hitnet 2 (with tracknet/sequence cleaning)',
-                     'hitnet_mirror2': 'Hitnet 2 + data mirroring'}
-    hitnet_model_name = st.selectbox('Hitnet Model :',
-        list(hitnet_values.keys()), format_func= lambda x : hitnet_values[x])
+    with st.expander("Parameters"):
 
-    params.FINAL_PREDICT_PROBA_THRESHOLD = st.slider(
-                'Hitnet predict threshold',
-                0.5, 1.0, params.FINAL_PREDICT_PROBA_THRESHOLD, 0.01)
+        hitnet_values = {'hitnet' : 'Hitnet 1 (no sequence cleaning)',
+                        'hitnet_mirror': 'Hitnet 1 + data mirroring',
+                        'hitnet2': 'Hitnet 2 (with sequence cleaning)',
+                        'hitnet_mirror2': 'Hitnet 2 + data mirroring'}
+        hitnet_model_name = st.selectbox('Hitnet Model :',
+            list(hitnet_values.keys()), format_func= lambda x : hitnet_values[x])
 
-    params.FINAL_PREDICT_MIN_FRAMES_BEFORE_NEXT_HIT = st.slider(
-                'Hitnet min frames between hits',
-                5, 20, params.FINAL_PREDICT_MIN_FRAMES_BEFORE_NEXT_HIT, 1)
+        params.FINAL_PREDICT_PROBA_THRESHOLD = st.slider(
+                    'Hitnet predict threshold',
+                    0.5, 1.0, params.FINAL_PREDICT_PROBA_THRESHOLD, 0.01)
 
-    params.MIN_FRAMES_FOR_HIT = st.slider(
-                'Hitnet min hit frames',
-                1, 5, params.MIN_FRAMES_FOR_HIT, 1)
+        params.FINAL_PREDICT_MIN_FRAMES_BEFORE_NEXT_HIT = st.slider(
+                    'Hitnet min frames between hits',
+                    5, 20, params.FINAL_PREDICT_MIN_FRAMES_BEFORE_NEXT_HIT, 1)
+
+        params.MIN_FRAMES_FOR_HIT = st.slider(
+                    'Hitnet min hit frames',
+                    1, 5, params.MIN_FRAMES_FOR_HIT, 1)
 
     if st.button('Start video augmentation'):
         bva = BvaMain(tmp_path, hitnet_model_name)
