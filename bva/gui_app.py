@@ -137,7 +137,7 @@ if tmp_path is not None:
 
         video_detail_input.to_csv(df_path)
 
-    with st.expander("Parameters"):
+    with st.expander("Hitnet Parameters"):
 
         hitnet_values = {'hitnet' : 'Hitnet 1 (no sequence cleaning)',
                         'hitnet_mirror': 'Hitnet 1 + data mirroring',
@@ -160,13 +160,19 @@ if tmp_path is not None:
 
         params.REMOVE_DIRTY_SEQUENCES_AFTER_PREDICTION = st.checkbox('Remove dirty sequences after predict')
 
+    with st.expander('Strokenet Parameters'):
+        strokenet_values = {'2class' : 'Strokenet',
+                            '2class_nets': 'Strokenet + net features'}
+        strokenet_model_name = st.selectbox('Strokenet Model :',
+            list(strokenet_values.keys()), format_func= lambda x : strokenet_values[x])
+
     if st.button('Start video augmentation'):
         print(f'FINAL_PREDICT_PROBA_THRESHOLD : {params.FINAL_PREDICT_PROBA_THRESHOLD}')
         print(f'FINAL_PREDICT_MIN_FRAMES_BEFORE_NEXT_HIT : {params.FINAL_PREDICT_MIN_FRAMES_BEFORE_NEXT_HIT}')
         print(f'MIN_FRAMES_FOR_HIT : {params.MIN_FRAMES_FOR_HIT}')
         print(f'REMOVE_DIRTY_SEQUENCES_AFTER_PREDICTION : {params.REMOVE_DIRTY_SEQUENCES_AFTER_PREDICTION}')
 
-        bva = BvaMain(tmp_path, hitnet_model_name)
+        bva = BvaMain(tmp_path, hitnet_model_name, strokenet_model_name)
         bva.run_tracknetv2()
         bva.run_players_detection()
         bva.run_hitnet()
