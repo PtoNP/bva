@@ -1,5 +1,6 @@
 # Data analysis
-- Document here the project: bva (badmintion video augmented)
-- Description: Project Description
 - Project Leader : @fransoa2607
-- Type of analysis: RNN
+- Description: The model allows to indentify and to categorize the hits on a badminton match video. 
+- Type of models: 
+    1. RNN for tracking hits
+    2. RNN for classifying hits   
